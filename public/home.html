@@ -43,6 +43,50 @@
 			<p>In this game, you will face off against another player in a battle of wits and strategy. Make your way to your opponent and end their existence before they do the same to you!</p>
 			<p>Favor a more defensive play style? Play keep away and secure a win by getting the most coins in 3 minutes</p> 
 		</section>
+
+		<section id="game-room">
+			<h2>Create or join a room</h2>
+			<form id="create-room">
+				<label for="room-code">Room code"</label>
+				<input type="text" id="room-code" name="room-code" required>
+				<button type="submit">Create Room</button>
+			</form>
+			<form id="join-room">
+				<label for="room-code">Room code"</label>
+				<input type="text" id="room-code" name="room-code" required>
+				<button type="submit">Join Room</button>
+			</form>
+		</section>
+
+		<section id="player-info">
+			<h2>Player Statistics</h2>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th id="player-name">Null</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Win</td>
+						<td id="stat-win">0</td>
+					</tr>
+					<tr>
+						<td>Draw</td>
+						<td id="stat-draw">0</td>
+					</tr>
+					<tr>
+						<td>Loss</td>
+						<td id="stat-loss">0</td>
+					</tr>
+					<tr>
+						<td>Total Coins</td>
+						<td id="stat-coins">0</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>		
 	</main>
 </body>
 </html>
