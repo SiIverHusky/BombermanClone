@@ -1,0 +1,49 @@
+body {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header button {
+    margin-left: 10px; /* Add spacing between buttons */
+}
+
+#signin-section, #signup-section {
+    position: fixed; /* Makes it float relative to the viewport */
+    top: 50%; /* Centers it vertically */
+    left: 50%; /* Centers it horizontally */
+    transform: translate(-50%, -50%); /* Adjusts for the element's own size */
+    padding: 20px; /* Add some padding for better appearance */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for a floating effect */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    z-index: 1000; /* Ensures it appears above other elements */
+}
+
+#signin-section {
+	background-color: lightblue;
+}
+
+#signup-section {
+	background-color: lightgreen;
+}
+
+#auth:has(#signin-section:visible), #auth:has(#signup-section:visible) {
+	display: block;
+}
+footer {
+	margin-top: auto;
+	font-size: x-small;
+	text-align: center;
+}

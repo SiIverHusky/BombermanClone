@@ -4,17 +4,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Home - I'ma Bomb U!</title>
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
 	<header>
-		<h1>I'ma Bomb U! - Homepage</h1>
+		<h1>I'ma Bomb U! - Home Page</h1>
 		<button id="signin-button" onclick="toggleSignIn()">Sign In</button>
+		<button id="signout-button" style="display: none;">Logout</button>
 	</header>
 
 	<main>
 
 		<div id="auth">
-			<section id="signin-section" style="display: none;">
+			<div id="signin-section" action="/signin" style="display: none;">
 				<h2>Sign In</h2>
 				<form id="signin-form" action="/signin" method="POST">
 					<label for="username">Username:</label>
@@ -25,8 +27,8 @@
 				</form>
 				<p>Don't have an account? <a href="#" onclick="toggleSignUp()">Sign Up</a></p>
 				<button onclick="toggleSignIn()">Cancel</button>
-			</section>
-			<section id="signup-section" style="display: none;">
+			</div>
+			<div id="signup-section" style="display: none;">
 				<h2>Sign Up</h2>
 				<form id="signup-form" action="/signup" method="POST">
 					<label for="new-username">Username:</label>
@@ -37,7 +39,7 @@
 				</form>
 				<p>Already have an account? <a href="#" onclick="toggleSignIn()">Sign In</a></p>
 				<button onclick="toggleSignUp()">Cancel</button>
-			</section>
+			</div>
 		</div>
 
 
@@ -48,21 +50,21 @@
 			<p>Favor a more defensive play style? Play keep away and secure a win by getting the most coins in 3 minutes</p> 
 		</section>
 
-		<section id="game-room">
+		<section id="game-room" style="display: none;">
 			<h2>Create or join a room</h2>
 			<form id="create-room">
-				<label for="room-code">Room code"</label>
-				<input type="text" id="room-code" name="room-code" required>
-				<button type="submit">Create Room</button>
+				<label for="room-code-create">Room code</label>
+				<input type="text" id="room-code-create" name="room-code" required>
+				<button type="submit">Create</button>
 			</form>
 			<form id="join-room">
-				<label for="room-code">Room code"</label>
-				<input type="text" id="room-code" name="room-code" required>
-				<button type="submit">Join Room</button>
+				<label for="room-code-join">Room code</label>
+				<input type="text" id="room-code-join" name="room-code" required>
+				<button type="submit">Join</button>
 			</form>
 		</section>
 
-		<section id="player-info">
+		<section id="player-info" style="display: none;">
 			<h2>Player Statistics</h2>
 			<table>
 				<thead>
@@ -92,6 +94,10 @@
 			</table>
 		</section>		
 	</main>
+
+	<footer>
+		<p>&copy;2025 Haris & Won for COMP4021, All rights reserved.</p>
+	</footer>
 
 	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 	<script src="scripts/home.js"></script>
