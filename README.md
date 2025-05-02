@@ -4,6 +4,7 @@ COMP4021 Project - A Bomberman Clone for the browser
 Home task:
 1. Joining and Creating a game (Client -> Server)
 2. Statistics (Server -> Client)
+3. Waiting Room (Server -> Client)
 
 Game Tasks:
 1. Setting up sprites and animations (Client)
