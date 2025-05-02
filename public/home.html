@@ -19,26 +19,26 @@
 			<div id="signin-section" action="/signin" style="display: none;">
 				<h2>Sign In</h2>
 				<form id="signin-form" action="/signin" method="POST">
-					<label for="username">Username:</label>
+					<label for="username">Username</label>
 					<input type="text" id="username" name="username" required><br><br>
-					<label for="password">Password:</label>
+					<label for="password">Password</label>
 					<input type="password" id="password" name="password" required><br><br>
 					<button type="submit">Submit</button>
 				</form>
 				<p>Don't have an account? <a href="#" onclick="toggleSignUp()">Sign Up</a></p>
-				<button onclick="toggleSignIn()">Cancel</button>
+				<button class="close" onclick="toggleSignIn()">X</button>
 			</div>
 			<div id="signup-section" style="display: none;">
 				<h2>Sign Up</h2>
 				<form id="signup-form" action="/signup" method="POST">
-					<label for="new-username">Username:</label>
+					<label for="new-username">Username</label>
 					<input type="text" id="new-username" name="username" required><br><br>
-					<label for="new-password">Password:</label>
+					<label for="new-password">Password</label>
 					<input type="password" id="new-password" name="password" required><br><br>
 					<button type="submit">Submit</button>
 				</form>
 				<p>Already have an account? <a href="#" onclick="toggleSignIn()">Sign In</a></p>
-				<button onclick="toggleSignUp()">Cancel</button>
+				<button class="close" onclick="toggleSignUp()">X</button>
 			</div>
 		</div>
 
