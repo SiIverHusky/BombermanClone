@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Waiting - I'ma Bomb U!</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header>
+		<h1>I'ma Bomb U! - Waiting Page</h1>
+	</header>
+
+	<main>
+        <div id="game-info">
+            <span>Room: <span id="room-code-display"></span> | Players: <span id="player-count">0</span> | Status: <span id="game-status">Waiting</span></span>
+        </div>
+        <h3>Players</h3>
+        <ul id="player-list"></ul>
+    </main>
+
+	<footer>
+		<p>&copy;2025 Haris & Won for COMP4021, All rights reserved.</p>
+	</footer>
+
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="scripts/waiting.js"></script>
+
+</body>
+</html>

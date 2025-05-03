@@ -96,6 +96,56 @@ $(document).ready(function () {
         });
     });
 
+
+	// Create Room
+    $("#create-room").on("submit", function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "/create-room",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({}), // Empty object
+            success: function (res) {
+                
+                const roomCode = res.roomCode;  // Room # from server
+                if (roomCode) {
+                    window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}`;
+                } else {
+                    alert("Error: No room code received from server.");
+                }
+            },
+            error: function (err) {
+                alert("Error creating room: " + (err.responseText || "Unknown error"));
+            }
+        });
+    });
+
+    // Join Room
+    $("#join-room").on("submit", function (e) {
+        e.preventDefault();
+        const roomCode = $("#room-code-join").val();
+
+        if (!roomCode) {
+            alert("Please enter a room code.");
+            return;
+        }
+
+        $.ajax({
+            url: "/join-room",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ roomCode }),
+            success: function (res) {
+                // Redirect to waiting room
+                window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}`;
+            },
+            error: function (err) {
+                alert("Error joining room: " + (err.responseText || "Unknown error"));
+            }
+        });
+    });
+
 	// Session
 	$.ajax({
         url: "/session",
