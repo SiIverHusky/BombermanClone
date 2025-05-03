@@ -4,6 +4,8 @@ const path = require('path');
 
 const { signUp, signIn, signOut, getSession } = require('./auth');
 
+const { createRoom, joinRoom } = require('./room');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -32,6 +34,18 @@ app.post('/signin', signIn);
 app.post('/signout', signOut);
 app.get('/session', getSession);
 
-app.listen(PORT, () => {
+app.post('/create-room', createRoom);
+app.post('/join-room', joinRoom);
+
+
+/* Set up Web Socket server for room management */
+const http = require('http');
+const server = http.createServer(app);
+const { setupRoomWebSocket } = require('./room');
+
+setupRoomWebSocket(server);
+
+// Modified to use server instead of app
+server.listen(PORT, () => { 
 	console.log(`Server is running on http://localhost:${PORT}`);
 })
