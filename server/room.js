@@ -31,9 +31,8 @@ function destroyRoom(roomCode){
     rooms.delete(roomCode);
 }
 
-function setupRoomWebSocket(server, authSession) {
-    const { Server } = require("socket.io");
-    const io = new Server(server);
+// io: namespace for io.of("/game")
+function setupRoomWebSocket(io, authSession) {
 
     io.use((socket, next) => {
         authSession(socket.request, {}, next);
@@ -58,26 +57,40 @@ function setupRoomWebSocket(server, authSession) {
         // Broadcast room status 
         io.to(roomCode).emit("roomStatus", { players: room.players, status: room.status });
 
-        // Game start condition
-        if (room.players.length === 2 && room.status === "waiting") {
+
+        socket.on("startGame", () => {
+            if (room.players.length < 2) {
+                socket.emit("error", { message: "Not enough players to start the game" });
+                return;
+            }
             room.status = "started";
             io.to(roomCode).emit("gameStarted");
-        }
+        });
+
 
         socket.on("disconnect", () => {
-            const user = socket.request.session.user;
-            room.players = room.players.filter(item => item.username !== user.username);
-            console.log(user.username, "disconnected from room", roomCode);
-            if(room.players.length == 0){
-                destroyRoom(roomCode);
+
+            if(room.status === "started"){
+                return;
             }
-            else if (room.players.length < 2 && room.status === "started") {
-                room.status = "waiting";
-                io.to(roomCode).emit("error", { message: "Opponent disconnected" });
-                rooms.delete(roomCode);
+            else{
+                const user = socket.request.session.user;
+                room.players = room.players.filter(item => item.username !== user.username);
+                //console.log(user.username, "disconnected from room", roomCode);
+
+                if(room.players.length == 0 && (room.status === "waiting" || room.status === "gameover")){
+                    destroyRoom(roomCode);
+                    return;
+                }
+                else if(room.players.length == 1 && (room.status === "waiting" || room.status === "gameover")){
+                    
+                    io.to(roomCode).emit("roomStatus", { players: room.players, status: room.status });
+                    return;
+                }
             }
+
         });
     });
 }
 
-module.exports = { createRoom, joinRoom, setupRoomWebSocket, destroyRoom };
+module.exports = { createRoom, joinRoom, setupRoomWebSocket, destroyRoom, rooms };

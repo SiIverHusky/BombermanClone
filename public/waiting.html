@@ -13,12 +13,23 @@
 	</header>
 
 	<main>
-        <div id="game-info">
+		
+		<section id="gameover-info" style="display: none;">
+			<h2> Game Over </h2>
+            <span id="winner"> Win! </span>
+			<div id = "status"> My status </div>
+			<div id = "leaderboard"> Leaderboard </div>
+        </section>
+        <section id="game-info">
+			<h2> Room Info </h2>
             <span>Room: <span id="room-code-display"></span> | Players: <span id="player-count">0</span> | Status: <span id="game-status">Waiting</span></span>
-        </div>
-		<button id="exit-room-button" >Exit room</button>
-        <h3>Players</h3>
+		</section>
+		
+        <h2>Players</h2>
         <ul id="player-list"></ul>
+
+		<button id="exit-room-button" >Exit Room</button>
+		<button id="start-game-button" style="display: none;">Start Game</button>
     </main>
 
 	<footer>
