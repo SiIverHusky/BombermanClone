@@ -12,16 +12,18 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const authSession = session({
+	secret: 'MarvelousSecretKeyThatNoOneKnows',
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+	}
+})
+
 app.use(
-	session({
-		secret: 'MarvelousSecretKeyThatNoOneKnows',
-		resave: false,
-		saveUninitialized: true,
-		cookie: {
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-		}
-	})
-)
+	authSession
+);
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -43,7 +45,8 @@ const http = require('http');
 const server = http.createServer(app);
 const { setupRoomWebSocket } = require('./room');
 
-setupRoomWebSocket(server);
+setupRoomWebSocket(server,authSession);
+
 
 // Modified to use server instead of app
 server.listen(PORT, () => { 

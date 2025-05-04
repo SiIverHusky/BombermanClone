@@ -8,7 +8,7 @@ function createRoom(req, res) {
     } while (rooms.has(roomCode));
     rooms.set(roomCode, { players: [ { id: req.session.id, username: req.session.user.username || 'Host' } ], status: 'waiting' });
 
-    console.log(req.session.id, req.session.user, "created room", roomCode);
+    //console.log(req.session.id, req.session.user, "created room", roomCode);
     
     res.status(200).json({ roomCode });
 }
@@ -28,13 +28,16 @@ function joinRoom(req, res) {
 }
 
 function destroyRoom(roomCode){
-    //TODO
-    
+    rooms.delete(roomCode);
 }
 
-function setupRoomWebSocket(server) {
+function setupRoomWebSocket(server, authSession) {
     const { Server } = require("socket.io");
     const io = new Server(server);
+
+    io.use((socket, next) => {
+        authSession(socket.request, {}, next);
+    });
 
     io.on("connection", (socket) => {
         const roomCode = socket.handshake.query.roomCode;
@@ -62,7 +65,13 @@ function setupRoomWebSocket(server) {
         }
 
         socket.on("disconnect", () => {
-            if (room.players.length < 2 && room.status === "started") {
+            const user = socket.request.session.user;
+            room.players = room.players.filter(item => item.username !== user.username);
+            console.log(user.username, "disconnected from room", roomCode);
+            if(room.players.length == 0){
+                destroyRoom(roomCode);
+            }
+            else if (room.players.length < 2 && room.status === "started") {
                 room.status = "waiting";
                 io.to(roomCode).emit("error", { message: "Opponent disconnected" });
                 rooms.delete(roomCode);

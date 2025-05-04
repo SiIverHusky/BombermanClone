@@ -156,6 +156,7 @@ $(document).ready(function () {
                 $("#signout-button").show();
                 $("#player-name").text(res.username);
                 $("#player-info").show();
+                $("#game-room").show();
             }
         },
         error: function () {
@@ -163,6 +164,7 @@ $(document).ready(function () {
             $("#signout-button").hide();
             $("#player-info").hide();
             $("#player-name").text("Null");
+            $("#game-room").hide();
         }
     });
 });

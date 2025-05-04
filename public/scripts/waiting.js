@@ -47,6 +47,29 @@ $(document).ready(function () {
     });
 });
 
+// Sign-out
+$("#signout-button").on("click", function () {
+    $.ajax({
+        url: "/signout",
+        method: "POST",
+        success: function () {
+            window.location.href = "/home.html";
+        },
+        error: function (err) {
+            alert("Error logging out: " + err.responseText);
+        }
+    });
+});
+
+// Sign-out
+$("#exit-room-button").on("click", function () {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomCode = urlParams.get("roomCode");
+    const socket = io({ query: { roomCode } });
+    socket.disconnect();
+    window.location.href = "/home.html";
+});
 
 // Socket connect, 
 
