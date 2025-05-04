@@ -43,10 +43,18 @@ app.post('/join-room', joinRoom);
 /* Set up Web Socket server for room management */
 const http = require('http');
 const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+io.use((socket, next) => {
+	authSession(socket.request, {}, next);
+});
+
 const { setupRoomWebSocket } = require('./room');
+const { setupGameWebSocket } = require('./game');
 
-setupRoomWebSocket(server,authSession);
-
+setupRoomWebSocket(io.of("/room"),authSession);
+setupGameWebSocket(io.of("/game"),authSession);
 
 // Modified to use server instead of app
 server.listen(PORT, () => { 
