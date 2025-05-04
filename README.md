@@ -26,30 +26,27 @@ Game Over:
 
 
 
-##Websocket API (Server -> Client)
+## Websocket APIs (Server -> Client)
 
 "error", { message }
 
-"timerUpdate", { seconds }
-update the time left in seconds
+~~"timerUpdate", { seconds }~~
 
 "gameOver", { message }
 
 "updateGameState" { state }
+
 "explodeBomb" { id }
 
 ~~"updatePos", { players: [ [ username1: { x:0 , y:0 } , username1: { x:20 , y:20 } ] }
-client must update players' position (every 16ms)
-
-"placeObject" { id: x8UevHc, type: "coin", x:30, y:35 }
-type : "coin" or "item"
-
-"removeObject" { id }
-
-"placeBomb" { id: e7CvkuQ, x:30, y:35 }~~
+client must update players' position (every 16ms)~~
+~~"placeObject" { id: x8UevHc, type: "coin", x:30, y:35 }
+type : "coin" or "item"~~
+~~"removeObject" { id }~~
+~~"placeBomb" { id: e7CvkuQ, x:30, y:35 }~~
 
 
-## Websocket API (Client -> Server)
+## Websocket APIs (Client -> Server)
 
 "updatePos", { x:30, y:20 }
 send my position to server (every 16ms)
