@@ -43,6 +43,7 @@ async function signUp(req, res) {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		users.push({ username, password: hashedPassword });
 		write(users);
+		req.session.user = { username };
 		res.status(201).json({ message: 'User created successfully' });
 	} catch (err) {
 		console.error('Error during sign-up:', err);
