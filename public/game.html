@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Game - 0000</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		#topBar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 5%;
+			background-color: #333;
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		#gameCanvas {
+			display: block;
+			position: relative;
+			top: 5%;
+			width: 100%;
+			height: 95%;
+		}
+	</style>
+</head>
+<body>
+	<div id="topBar">
+		<div id="room">Room:</div>
+		<div id="score">Timer: 0</div>
+		<div id="lives">Coin: 0</div>
+		<div id="inv">Inventory: </div>
+	</div>
+
+	<canvas id="gameCanvas">
+		
+	</canvas>
+	
+	<script src="scripts/arena.js"></script>
+	<script src="scripts/tilemap.js"></script>
+	<script src="scripts/player.js"></script>
+	<script src="scripts/game.js"></script>	
+</body>
+</html>
