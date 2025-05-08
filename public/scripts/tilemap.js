@@ -7,9 +7,10 @@ const tilemap = Array.from({ length: TILE_ROWS }, () => Array(TILE_COLS).fill(0)
 
 // Tile types
 const TILE_EMPTY = 0;
-const TILE_BLOCK = 1;
-const TILE_PICKUP = 2;
-const TILE_BOMB = 3;
+const TILE_BLOCK = 1; // Indestructible blocks
+const TILE_BRICK = 2; // Destructible bricks
+const TILE_PICKUP = 3;
+const TILE_BOMB = 4;
 
 // Populate the tilemap based on blocks from arena.js
 blocks.forEach(block => {
@@ -46,7 +47,10 @@ function drawTilemap() {
         for (let col = 0; col < TILE_COLS; col++) {
             const { x, y } = tileToPixel(row, col);
             if (tilemap[row][col] === TILE_BLOCK) {
-                ctx.fillStyle = gray;
+                ctx.fillStyle = "gray"; // Indestructible blocks
+                ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+            } else if (tilemap[row][col] === TILE_BRICK) {
+                ctx.fillStyle = "brown"; // Destructible bricks
                 ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
             }
         }

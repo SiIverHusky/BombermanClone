@@ -12,6 +12,11 @@ function gameLoop() {
     // Draw the tilemap
     drawTilemap();
 
+    // Draw bricks and items
+    drawBricks();
+    drawItems();
+    collectItems();
+
     // Update and draw the player
     updatePlayer();
     drawPlayer();
@@ -19,6 +24,9 @@ function gameLoop() {
     // Request the next frame
     requestAnimationFrame(gameLoop);
 }
+
+// Setup
+setPlayerPosition(0, 0); // Set initial player position (row, col)
 
 // Start the game loop
 gameLoop();
