@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     const urlParams = new URLSearchParams(window.location.search);
     const roomCode = urlParams.get("roomCode");
 
@@ -12,16 +11,18 @@ $(document).ready(function () {
     // Update UI with room code
     $("#room-code-display").text(roomCode);
 
-    // Connect Socket.io 
+    // Connect to the room namespace via Socket.io
     const socket = io("/room", { query: { roomCode } });
 
+    // Handle successful connection
     socket.on("connect", () => {
         console.log("Connected to room: " + roomCode);
         socket.emit("getRoomStatus");
     });
 
+    // Handle room status updates
     socket.on("roomStatus", (data) => {
-        // Update Player List and Status
+        // Update player list and room status
         $("#player-list").empty();
         data.players.forEach(player => {
             $("#player-list").append(`<li>${player.username}</li>`);
@@ -29,73 +30,69 @@ $(document).ready(function () {
         $("#player-count").text(data.players.length);
         $("#game-status").text(data.status);
 
-        if (data.players.length === 2 && data.status != "started"){
-            /*enable Game Start Button*/
+        // Enable or disable the "Start Game" button
+        if (data.players.length === 2 && data.status !== "started") {
             $("#start-game-button").show();
-        }
-        else {
-            /*disable Game start Button*/
+        } else {
             $("#start-game-button").hide();
         }
 
+        // Handle game over state
         if (data.status === "gameover") {
             $("#gameover-info").show();
             $("#start-game-button").text("Rematch");
-        }
-        else{
+        } else {
             $("#start-game-button").text("Start Game");
             $("#gameover-info").hide();
         }
-
     });
 
+    // Handle game start event
     socket.on("gameStarted", () => {
-        // Redirect to game page
+        // Redirect to the game page
         window.location.href = `/game.html?roomCode=${encodeURIComponent(roomCode)}`;
     });
 
+    // Handle errors from the server
     socket.on("error", (data) => {
         alert("Error: " + data.message);
         window.location.href = "/home.html";
     });
 
+    // Handle connection errors
     socket.on("connect_error", (error) => {
         console.error("Socket.io error:", error);
         alert("Error connecting to room.");
         window.location.href = "/home.html";
     });
-});
 
-// Sign-out
-$("#signout-button").on("click", function () {
-    $.ajax({
-        url: "/signout",
-        method: "POST",
-        success: function () {
-            window.location.href = "/home.html";
-        },
-        error: function (err) {
-            alert("Error logging out: " + err.responseText);
-        }
+    // Handle disconnection
+    socket.on("disconnect", () => {
+        console.log("Disconnected from room.");
+    });
+
+    // Sign-out button functionality
+    $("#signout-button").on("click", function () {
+        $.ajax({
+            url: "/signout",
+            method: "POST",
+            success: function () {
+                window.location.href = "/home.html";
+            },
+            error: function (err) {
+                alert("Error logging out: " + err.responseText);
+            }
+        });
+    });
+
+    // Exit room button functionality
+    $("#exit-room-button").on("click", function () {
+        socket.disconnect();
+        window.location.href = "/home.html";
+    });
+
+    // Start game or rematch button functionality
+    $("#start-game-button").on("click", function () {
+        socket.emit("startGame");
     });
 });
-
-// Sign-out
-$("#exit-room-button").on("click", function () {
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomCode = urlParams.get("roomCode");
-    const socket = io("/room",{ query: { roomCode } });
-    socket.disconnect();
-    window.location.href = "/home.html";
-});
-
-// Start Game or Rematch
-$("#start-game-button").on("click", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomCode = urlParams.get("roomCode");
-    const socket = io("/room",{ query: { roomCode } });
-    socket.emit("startGame");
-});
-
-
