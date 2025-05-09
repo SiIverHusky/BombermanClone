@@ -72,9 +72,9 @@ function initializeGameState(roomCode, players) {
 
     // Initialize players
     const playerStates = {};
-    players.forEach((player, index) => {
-        const playerKey = index === 0 ? "player1" : "player2";
-        addPlayer(playerStates, player, playerKey);
+    players.forEach(player => {
+        const username = player.username;
+        addPlayer(playerStates, player, username); // Use username as the key
     });
 
     console.log("Player states initialized:", playerStates);
@@ -82,7 +82,7 @@ function initializeGameState(roomCode, players) {
     // Create the game state
     const gameState = {
         tilemap,
-        players: playerStates, // Use player1 and player2 keys
+        players: playerStates, // Use usernames as keys
         items: [],
         bombs: [],
         gameEnded: false,

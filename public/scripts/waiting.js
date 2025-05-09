@@ -8,6 +8,13 @@ $(document).ready(function () {
         return;
     }
 
+    const username = urlParams.get("username");
+    if (!username) {
+        alert("Error: Username is required.");
+        window.location.href = "/home.html";
+        return;
+    }
+
     // Update UI with room code
     $("#room-code-display").text(roomCode);
 
@@ -49,9 +56,7 @@ $(document).ready(function () {
 
     // Handle game start event
     socket.on("gameStarted", () => {
-        // Redirect to the game page
-        const sessionId = socket.id;
-        window.location.href = `/game.html?roomCode=${encodeURIComponent(roomCode)}&sessionId=${encodeURIComponent(sessionId)}`;
+        window.location.href = `/game.html?roomCode=${encodeURIComponent(roomCode)}&username=${encodeURIComponent(username)}`;
     });
 
     // Handle errors from the server

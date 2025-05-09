@@ -124,6 +124,44 @@ function setupGameWebSocket(io, authSession) {
             handlePlayerHit(roomCode, gameState, data.playerId, io);
         });
 
+        socket.on("playerInput", (data) => {
+            console.log("Player input event received:", data);
+            const gameState = activeGames.get(roomCode);
+            if (!gameState) return;
+
+            const { username, input } = data;
+            const player = gameState.players[username];
+            if (!player || player.isDead) return;
+
+            // Process movement inputs (W, A, S, D)
+            const directionMap = {
+                W: { x: 0, y: -1 },
+                A: { x: -1, y: 0 },
+                S: { x: 0, y: 1 },
+                D: { x: 1, y: 0 }
+            };
+
+            if (directionMap[input]) {
+                const moved = processPlayerMove(gameState, username, directionMap[input]);
+                if (moved) {
+                    console.log(`${username} moved`);
+                    // Broadcast updated positions of all players
+                    io.to(roomCode).emit("updatePlayers", {
+                        players: gameState.players
+                    });
+                }
+            }
+
+            // Handle special inputs (Spacebar and G)
+            if (input === "Spacebar") {
+                console.log(`${username} pressed Spacebar`);
+                placeBomb(roomCode, { username }, gameState, io);
+            } else if (input === "G") {
+                console.log(`${username} pressed G`);
+                // Add logic for G action (e.g., special ability)
+            }
+        });
+
         socket.on("disconnect", () => {
             console.log(`Player disconnected from game: ${socket.id}, Room: ${roomCode}`);
             if (playerReadiness.has(roomCode)) {
@@ -148,12 +186,13 @@ function startGameForRoom(roomCode, players, wss) {
 
     console.log("Players in the game:", gameState.players);
 
+
     // Broadcast the initial game state to all clients in the room
     wss.to(roomCode).emit('initialize', {
         tilemap: gameState.tilemap,
         players: {
-            player1: gameState.players.player1,
-            player2: gameState.players.player2
+            player1: Object.values(gameState.players)[0], // Map the first player
+            player2: Object.values(gameState.players)[1]  // Map the second player
         },
         items: gameState.items
     });

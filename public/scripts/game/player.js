@@ -1,10 +1,6 @@
-const urlParams = new URLSearchParams(window.location.search);
-const roomCode = urlParams.get("roomCode");
-const sessionId = urlParams.get("sessionId");
-
 // Player 1 and Player 2 objects
 const player1 = {
-    id: null,
+    username: null,
     x: 0,
     y: 0,
     width: 16 * scale,
@@ -19,7 +15,7 @@ const player1 = {
 };
 
 const player2 = {
-    id: null,
+    username: null,
     x: 0,
     y: 0,
     width: 16 * scale,
@@ -33,24 +29,13 @@ const player2 = {
     collisionPoint: { x: 0, y: 0 }
 };
 
-// Key state tracking
-const keys = {};
-window.addEventListener("keydown", (e) => {
-    keys[e.key] = true;
-
-    if (e.key === " ") {
-        placeBomb();
-    }
-});
-window.addEventListener("keyup", (e) => {
-    keys[e.key] = false;
-});
 
 // Function to update the position of the local player
 function updatePlayerPosition() {
-    if (player1.id === sessionId) {
+    if (player1.username === username) {
         movePlayer(player1);
-    } else if (player2.id === sessionId) {
+    }
+    if (player2.username === username) {
         movePlayer(player2);
     }
 }
@@ -60,8 +45,8 @@ function movePlayer(player) {
     if (player.isDead) return;
 
     const direction = {
-        x: keys['d'] - keys['a'], // 1 for right, -1 for left, 0 for no horizontal movement
-        y: keys['s'] - keys['w']  // 1 for down, -1 for up, 0 for no vertical movement
+        x: keyState['d'] - keyState['a'], // 1 for right, -1 for left, 0 for no horizontal movement
+        y: keyState['s'] - keyState['w']  // 1 for down, -1 for up, 0 for no vertical movement
     };
 
     let newX = player.x + direction.x * player.speed;
@@ -114,25 +99,24 @@ const bombs = [];
 const explosions = [];
 
 // Function to place a bomb (notify the server)
-function placeBomb() {
-    const currentPlayer = player1.id === sessionId ? player1 : player2;
+function placeBomb(player) {
 
-    if (currentPlayer.maxBombs <= 0) {
+    if (player.maxBombs <= 0) {
         console.log("No bombs available to place.");
         return;
     }
 
-    const { x, y } = currentPlayer.collisionPoint;
+    const { x, y } = player.collisionPoint;
     const { row, col } = pixelToTile(x, y);
 
     ws.send(JSON.stringify({
         type: 'placeBomb',
         row,
         col,
-        playerId: currentPlayer.id
+        playerUsername: player.username
     }));
 
-    currentPlayer.maxBombs--;
+    player.maxBombs--;
 }
 
 // Function to draw bombs

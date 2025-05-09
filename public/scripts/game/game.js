@@ -1,3 +1,12 @@
+// Extract username from the URL query
+const urlParams = new URLSearchParams(window.location.search);
+const username = urlParams.get("username");
+
+// Extract roomCode from the URL query
+const roomCode = urlParams.get("roomCode");
+
+
+
 const ws = io("/game", { query: { roomCode } });
 
 
@@ -5,7 +14,6 @@ const ws = io("/game", { query: { roomCode } });
 ws.on("connect", () => {
     console.log("Connected to the server!");
     ws.emit("playerReady", { roomCode }); // Notify the server that the player is ready
-    gameLoop();
 });
 
 // WebSocket 에러
@@ -21,6 +29,7 @@ ws.on("disconnect", () => {
 // 서버로부터 수신된 이벤트 처리
 ws.on("initialize", (data) => {
     initializeGame(data);
+    gameLoop(); // Start the game loop
 });
 
 ws.on("updateTilemap", (data) => {
@@ -56,27 +65,61 @@ ws.on("updateExplosions", (data) => {
     explosions.push(...data.explosions); // Add new explosions from the server
 });
 
-// 초기화 함수
-function initializeGame(data) {
-    player1.id = data.players[0].id;
-    player1.x = data.players[0].x;
-    player1.y = data.players[0].y;
+// Function to handle input and send to server
+function handleInput(key) {
+    const validKeys = ["W", "A", "S", "D", " ", "G"];
+    if (validKeys.includes(key.toUpperCase())) {
+        console.log("Key pressed:", key.toUpperCase());
+        ws.emit("playerInput", { input: key.toUpperCase(), username: username });
+    }
+}
 
-    player2.id = data.players[1].id;
-    player2.x = data.players[1].x;
-    player2.y = data.players[1].y;
+// Map to track key states
+const keyState = {};
+
+// Event listener for keydown
+window.addEventListener("keydown", (event) => {
+    if (!keyState[event.key]) {
+        keyState[event.key] = true;
+        handleInput(event.key);
+    }
+});
+
+// Event listener for keyup
+window.addEventListener("keyup", (event) => {
+    keyState[event.key] = false;
+});
+
+// Initializing function
+function initializeGame(data) {
+    console.log("Initializing game with data:", data);
+    player1.username = data.players.player1.username;
+    player1.x = data.players.player1.x * scale + arenaX;
+    player1.y = data.players.player1.y * scale + arenaY;
+
+    player2.username = data.players.player2.username;
+    player2.x = data.players.player2.x * scale + arenaX;
+    player2.y = data.players.player2.y * scale + arenaY;
 
     updateTilemap(data.tilemap); // Initialize the tilemap
     updateItems(data.items); // Initialize items
 }
 
 function updatePlayers(serverPlayers) {
-    if (serverPlayers[player1.id]) {
-        Object.assign(player1, serverPlayers[player1.id]);
+    // Update player1's position if it exists in the server data
+    if (serverPlayers[player1.username]) {
+        player1.x = serverPlayers[player1.username].x * scale + arenaX;
+        player1.y = serverPlayers[player1.username].y * scale + arenaY;
     }
-    if (serverPlayers[player2.id]) {
-        Object.assign(player2, serverPlayers[player2.id]);
+
+    // Update player2's position if it exists in the server data
+    if (serverPlayers[player2.username]) {
+        player2.x = serverPlayers[player2.username].x * scale + arenaX;
+        player2.y = serverPlayers[player2.username].y * scale + arenaY;
     }
+
+    // Redraw players after updating their positions
+    drawPlayers();
 }
 
 // 플레이어 피격 처리
@@ -110,16 +153,15 @@ function handleEndGame(message) {
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Fixed
     drawBounds();
     drawFloor();
     drawGrid();
-    drawTilemap(); // Draw the updated tilemap
-    drawItems(); // Draw items on the map
-    updatePlayerPosition(); // Update the local player's position
-    drawPlayers(); // Draw both players
-    drawBombs(); // Draw bombs
-    drawExplosions(); // Draw explosions
+    drawTilemap();
+    drawItems();
+    updatePlayerPosition();
+    drawPlayers();
+    drawBombs();
+    drawExplosions();
 
     requestAnimationFrame(gameLoop); // Continue the game loop
 }

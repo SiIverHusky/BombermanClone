@@ -100,6 +100,7 @@ $(document).ready(function () {
 	// Create Room
     $("#create-room").on("submit", function (e) {
         e.preventDefault();
+        const username = $("#player-name").text();
 
         $.ajax({
             url: "/create-room",
@@ -110,7 +111,7 @@ $(document).ready(function () {
                 
                 const roomCode = res.roomCode;  // Room # from server
                 if (roomCode) {
-                    window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}`;
+                    window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}&username=${encodeURIComponent(username)}`;
                 } else {
                     alert("Error: No room code received from server.");
                 }
@@ -125,6 +126,7 @@ $(document).ready(function () {
     $("#join-room").on("submit", function (e) {
         e.preventDefault();
         const roomCode = $("#room-code-join").val();
+        const username = $("#player-name").text();
 
         if (!roomCode) {
             alert("Please enter a room code.");
@@ -138,7 +140,7 @@ $(document).ready(function () {
             data: JSON.stringify({ roomCode }),
             success: function (res) {
                 // Redirect to waiting room
-                window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}`;
+                window.location.href = `/waiting.html?roomCode=${encodeURIComponent(roomCode)}&username=${encodeURIComponent(username)}`;
             },
             error: function (err) {
                 alert("Error joining room: " + (err.responseText || "Unknown error"));
