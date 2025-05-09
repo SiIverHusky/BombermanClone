@@ -1,7 +1,8 @@
-const { gameState } = require('./gameLogic');
+const { gameStates } = require('./gameLogic');
 
 // Function to place items randomly inside bricks
-function placeItems() {
+function placeItems(gameState) {
+    
     gameState.tilemap.forEach((row, rowIndex) => {
         row.forEach((tile, colIndex) => {
             if (tile === 2) { // TILE_BRICK
