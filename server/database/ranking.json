@@ -1,0 +1,20 @@
+[
+  {
+    "username": "a",
+    "wins": 0,
+    "losses": 0,
+    "draws": 19
+  },
+  {
+    "username": "s",
+    "wins": 0,
+    "losses": 1,
+    "draws": 19
+  },
+  {
+    "username": "Won",
+    "wins": 100,
+    "losses": 0,
+    "draws": 15
+  }
+]

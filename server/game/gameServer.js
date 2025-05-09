@@ -2,7 +2,7 @@ const { initializeGameState, handleBombExplosions } = require('./gameLogic');
 const { rooms } = require("../room");
 
 // Game constants
-const GAME_DURATION = 3 * 60 * 1000; // 3 minutes in milliseconds
+const GAME_DURATION = 3 * 2 * 1000; // 3 minutes in milliseconds
 const activeGames = new Map(); // Map to track active games by roomCode
 
 function setupGameWebSocket(io, authSession) {
@@ -67,12 +67,11 @@ function startGameForRoom(roomCode, players, wss) {
 
     // Initialize the game state for this room and store it in activeGames
     const gameState = initializeGameState(roomCode, players);
-
     console.log("Tilemap initialized:", gameState.tilemap);
 
     activeGames.set(roomCode, gameState);
 
-    console.log("Players in the game:", gameState.players);
+    //console.log("Players in the game:", gameState.players);
 
     // Broadcast the initial game state to all clients in the room
     wss.to(roomCode).emit('initialize', {
@@ -142,7 +141,7 @@ function checkEndGameCondition(roomCode, gameState, wss) {
     const remainingTime = GAME_DURATION - (Date.now() - gameState.gameStartTime);
 
     if (remainingTime <= 0) {
-        endGame(roomCode, gameState, "Time's up! The game is a draw.", wss);
+        endGame(roomCode, gameState, null, "Time's up! The game is a draw.", wss);
         return;
     }
 
@@ -150,17 +149,74 @@ function checkEndGameCondition(roomCode, gameState, wss) {
     if (alivePlayers.length <= 1) {
         const winner = alivePlayers[0] ? alivePlayers[0].id : null;
         const message = winner ? `Player ${winner} wins!` : "No players left alive. The game is a draw.";
-        endGame(roomCode, gameState, message, wss);
+
+        endGame(roomCode, gameState, winner, message, wss);
     }
 }
+function updateGameLog(roomCode, players, winner) {
 
-function endGame(roomCode, gameState, message, wss) {
+    const gameLog = require("../database/gameLog.json");
+    gameLog.push({
+        roomCode: roomCode,
+        winner: winner,
+        players: players,
+        timestamp: new Date().toISOString()
+    });
+    //write on the json file
+    const fs = require('fs');
+    fs.writeFileSync('./server/database/gameLog.json', JSON.stringify(gameLog, null, 2));
+}
+
+
+function updateRanking(roomCode,players, winner) {
+
+    const ranking = require("../database/ranking.json");
+    players.forEach(player => {
+        const playerData = ranking.find(p => p.username === player.username);
+        if (playerData) {
+            if (winner === null) {
+                playerData.draws += 1;
+            }
+            else if (player.id === winner) {
+                playerData.wins += 1;
+            } 
+            else {
+                playerData.losses += 1;
+            }
+        } else {
+            ranking.push({
+                username: player.username,
+                wins: player.id === winner && winner != null? 1 : 0,
+                losses: player.id === winner && winner != null ? 0 : 1,
+                draws: winner === null ? 1 : 0
+            });
+        }
+    });
+
+    // Save the updated ranking to the file
+    const fs = require('fs');
+    fs.writeFileSync('./server/database/ranking.json', JSON.stringify(ranking, null, 2));
+
+
+}
+
+
+function endGame(roomCode, gameState, winner, message, wss) {
     gameState.gameEnded = true;
 
     wss.to(roomCode).emit('gameOver', { message });
     const room = rooms.get(roomCode);
     if (room) {
         room.status = "gameover";
+        const players = []
+        room.players.forEach(playerInRoom => {
+            const player = gameState.players[playerInRoom.id];
+            player["username"] = playerInRoom.username;
+            players.push(player)
+        })
+        
+        updateGameLog(roomCode, players, winner);
+        updateRanking(roomCode, players, winner);
     }
     console.log(`Game for room ${roomCode} ended: ${message}`);
 }
