@@ -53,7 +53,9 @@ ws.on("timerUpdate", (data) => {
 });
 
 ws.on("gameOver", (data) => {
-    handleEndGame(data.message); // Handle game over events
+    console.log("Game over event received:", data);
+    const redirectUrl = `/waiting.html?roomCode=${roomCode}&username=${username}`;
+    window.location.href = redirectUrl;
 });
 
 ws.on("updateBombs", (data) => {
@@ -164,4 +166,10 @@ function gameLoop() {
     drawExplosions();
 
     requestAnimationFrame(gameLoop); // Continue the game loop
+}
+
+// Add logic to handle exiting the room
+function exitRoom() {
+    const redirectUrl = `/home.html?username=${username}`;
+    window.location.href = redirectUrl;
 }

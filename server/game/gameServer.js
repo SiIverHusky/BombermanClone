@@ -203,6 +203,12 @@ function startGameForRoom(roomCode, players, wss) {
             clearInterval(gameInterval);
             activeGames.delete(roomCode);
             console.log(`Game for room ${roomCode} has ended.`);
+
+            // Notify all players about the game end
+            wss.to(roomCode).emit('gameOver', {
+                message: 'Game Over',
+                username: Object.keys(gameState.players) // Send usernames of players
+            });
             return;
         }
 

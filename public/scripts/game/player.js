@@ -11,7 +11,7 @@ const player1 = {
     maxBombs: 3,
     bombRange: 3,
     coins: 0,
-    collisionPoint: { x: 0, y: 0 }
+    collisionPoint: { x: 0, y: 0 },
 };
 
 const player2 = {
@@ -26,7 +26,7 @@ const player2 = {
     maxBombs: 3,
     bombRange: 3,
     coins: 0,
-    collisionPoint: { x: 0, y: 0 }
+    collisionPoint: { x: 0, y: 0 },
 };
 
 
@@ -78,7 +78,8 @@ function sendPlayerMove(player) {
         x: player.x,
         y: player.y,
         speed: player.speed,
-        collision: player.collisionPoint
+        collision: player.collisionPoint,
+        arena: player.arena // Include arena sub-object
     }));
 }
 
