@@ -19,7 +19,7 @@ const otherPlayers = {};
 
 // Key state tracking
 const keys = {};
-window.addEventListener("keydown", (e) => {
+window.addEventListener("keydown", (e) => { 
     keys[e.key] = true;
     console.log(`Key pressed: ${e.key}`); // Log key press
 });

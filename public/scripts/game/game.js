@@ -88,20 +88,34 @@ function handleEndGame(message) {
 
 // 게임 루프
 function gameLoop() {
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Fixed
-    drawBounds();
-    drawFloor();
-    drawGrid();
-    drawTilemap(); // Draw the updated tilemap
-    drawItems(); // Draw items on the map
+    // Redraw the arena
+    ctx.fillStyle = gray;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Broken
-    updatePlayerPosition(); // Update the local player's position
-    drawPlayer(); // Draw the local player
-    drawOtherPlayers(); // Draw other players
-    // checkItemCollection(); // Uncomment if item collection logic is implemented
+    ctx.fillStyle = green;
+    ctx.fillRect(arenaX, arenaY, arenaWidth, arenaHeight);
 
-    requestAnimationFrame(gameLoop); // Continue the game loop
+    // Draw the tilemap
+    drawTilemap();
+
+    // Draw bricks and items
+    drawBricks();
+    drawItems();
+    collectItems();
+
+    // Update and draw the player
+    updatePlayer();
+    drawPlayer();
+
+    // Request the next frame
+    requestAnimationFrame(gameLoop);
 }
+
+// Setup
+setPlayerPosition(0, 0); // Set initial player position (row, col)
+
+// Start the game loop
+gameLoop();
