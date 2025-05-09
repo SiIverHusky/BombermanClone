@@ -50,6 +50,10 @@ ws.on("gameOver", (data) => {
 // 초기화 함수
 function initializeGame(data) {
     player.id = data.playerId;
+    player.x = data.players[player.id].x;
+    player.y = data.players[player.id].y;
+    player.color = data.players[player.id].color || "white"; // Default to white if color is missing
+
     updateTilemap(data.tilemap);
     updateItems(data.items);
     updateOtherPlayers(data.players);
@@ -85,7 +89,13 @@ function handleEndGame(message) {
 // 게임 루프
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawArena();
+
+    // Fixed
+    drawBounds();
+    drawFloor();
+    drawGrid();
+
+    // Broken
     drawTilemap();
     drawItems();
     updatePlayerPosition();

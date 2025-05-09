@@ -94,7 +94,10 @@ function drawOtherPlayers() {
 function updateOtherPlayers(serverPlayers) {
     Object.keys(serverPlayers).forEach(id => {
         if (id !== player.id) {
-            otherPlayers[id] = serverPlayers[id];
+            otherPlayers[id] = {
+                ...serverPlayers[id], // Copy all attributes from the server
+                color: serverPlayers[id].color || "white" // Default to white if color is missing
+            };
         }
     });
 }
