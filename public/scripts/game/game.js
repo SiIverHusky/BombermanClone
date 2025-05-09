@@ -24,19 +24,19 @@ ws.on("initialize", (data) => {
 });
 
 ws.on("updateTilemap", (data) => {
-    updateTilemap(data.tilemap);
+    updateTilemap(data.tilemap); // Update the local tilemap with server data
 });
 
 ws.on("updatePlayers", (data) => {
-    updateOtherPlayers(data.players);
+    updateOtherPlayers(data.players); // Sync other players' positions
 });
 
 ws.on("updateItems", (data) => {
-    updateItems(data.items);
+    updateItems(data.items); // Sync items on the map
 });
 
 ws.on("playerHit", (data) => {
-    handlePlayerHit(data.playerId);
+    handlePlayerHit(data.playerId); // Handle player hit events
 });
 
 ws.on("timerUpdate", (data) => {
@@ -44,7 +44,7 @@ ws.on("timerUpdate", (data) => {
 });
 
 ws.on("gameOver", (data) => {
-    handleEndGame(data.message);
+    handleEndGame(data.message); // Handle game over events
 });
 
 // 초기화 함수
@@ -54,9 +54,9 @@ function initializeGame(data) {
     player.y = data.players[player.id].y;
     player.color = data.players[player.id].color || "white"; // Default to white if color is missing
 
-    updateTilemap(data.tilemap);
-    updateItems(data.items);
-    updateOtherPlayers(data.players);
+    updateTilemap(data.tilemap); // Initialize the tilemap
+    updateItems(data.items); // Initialize items
+    updateOtherPlayers(data.players); // Initialize other players
 }
 
 // 플레이어 피격 처리
@@ -83,7 +83,7 @@ function updateTimerDisplay(remainingTime) {
 // 게임 종료 처리
 function handleEndGame(message) {
     alert(message);
-    window.location.href = "/waiting.html"+`?roomCode=${roomCode}`;
+    window.location.href = "/waiting.html" + `?roomCode=${roomCode}`;
 }
 
 // 게임 루프
@@ -94,13 +94,14 @@ function gameLoop() {
     drawBounds();
     drawFloor();
     drawGrid();
+    drawTilemap(); // Draw the updated tilemap
+    drawItems(); // Draw items on the map
 
     // Broken
-    drawTilemap();
-    drawItems();
-    updatePlayerPosition();
-    drawPlayer();
-    drawOtherPlayers();
-    checkItemCollection();
-    requestAnimationFrame(gameLoop);
+    updatePlayerPosition(); // Update the local player's position
+    drawPlayer(); // Draw the local player
+    drawOtherPlayers(); // Draw other players
+    // checkItemCollection(); // Uncomment if item collection logic is implemented
+
+    requestAnimationFrame(gameLoop); // Continue the game loop
 }
