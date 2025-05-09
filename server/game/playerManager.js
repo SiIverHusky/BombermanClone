@@ -10,8 +10,8 @@ function addPlayer(playerStates, player) {
 
     playerStates[player.id] = {
         id: player.id,
-        x: startPosition.col * TILE_SIZE * 4,
-        y: startPosition.row * TILE_SIZE * 4,
+        x: startPosition.col * TILE_SIZE * 4 + 40,
+        y: startPosition.row * TILE_SIZE * 4 + 60,
         width: TILE_SIZE * 4,
         height: TILE_SIZE * 6,
         speed: 0.5 * 4,
