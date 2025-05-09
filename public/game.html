@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content`="width=device-width, initial-scale=1.0">
-    <title>Bomberman Game Page</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Game - 0000</title>
 	<style>
 		html, body {
 			margin: 0;
@@ -34,27 +34,21 @@
 	</style>
 </head>
 <body>
-
-	
 	<div id="topBar">
-		<div id="bomb">Range: Amount:</div>
-		<div id="timer">Timer: 0s</div>
-		<div id="coin">Coins: 0</div>
+		<div id="room">Room:</div>
+		<div id="score">Timer: 0</div>
+		<div id="lives">Coin: 0</div>
+		<div id="inv">Inventory: </div>
 	</div>
-	
-    <canvas id="gameCanvas">
+
+	<canvas id="gameCanvas">
 		
 	</canvas>
-
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    
-	<script src="scripts/game/arena.js"></script>
-	<script src="scripts/game/player.js"></script>
-	<script src="scripts/game/tilemap.js"></script>
-	<script src="scripts/game/items.js"></script>
-	<script src="scripts/game/game.js"></script>
-
-
+	
+	<script src="scripts/arena.js"></script>
+	<script src="scripts/tilemap.js"></script>
+	<script src="scripts/player.js"></script>
+	<script src="scripts/items.js"></script>
+	<script src="scripts/game.js"></script>	
 </body>
 </html>
