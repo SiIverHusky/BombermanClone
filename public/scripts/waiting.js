@@ -95,4 +95,16 @@ $(document).ready(function () {
     $("#start-game-button").on("click", function () {
         socket.emit("startGame");
     });
+
+    $("#copy-room-code").on("click", function () {
+        const roomCode = $("#room-code-display").text();
+        navigator.clipboard.writeText(roomCode).then(() => {
+            //alert("Room code copied to clipboard!");
+            //Disable the button for 2 seconds and turn into "copied"
+            $(this).prop("disabled", true);
+            $(this).text("Copied!");
+        }).catch(err => {
+            console.error("Failed to copy: ", err);
+        });
+    });
 });
