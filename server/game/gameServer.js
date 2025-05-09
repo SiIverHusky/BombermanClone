@@ -1,4 +1,6 @@
 const { initializeGameState, handleBombExplosions } = require('./gameLogic');
+const { addPlayer, removePlayer, processPlayerMove, processPlaceBomb } = require('./playerManager');
+const { placeItems, handleItemCollection } = require('./itemManager');
 const { rooms } = require("../room");
 
 // Game constants
@@ -43,6 +45,24 @@ function setupGameWebSocket(io, authSession) {
         /* Main Game logic */
         console.log("Players in the room:", room.players);
         startGameForRoom(roomCode, room.players, io);
+
+        socket.on("playerMove", (data) => {
+            console.log("Player move event received:", data);
+            const gameState = activeGames.get(roomCode);
+            if (!gameState) return;
+
+            // Process the player's movement
+            const moveSuccessful = processPlayerMove(gameState, data.id, data.direction, data.speed);
+
+            if (moveSuccessful) {
+                // Broadcast the updated player state to other clients
+                broadcastPlayerUpdate(roomCode, gameState, io);
+            } else {
+                // Send the corrected position back to the player
+                const player = gameState.players[data.id];
+                socket.emit("updatePlayerPosition", { x: player.x, y: player.y });
+            }
+        });
 
         socket.on("playerHit", (data) => {
             const gameState = activeGames.get(roomCode);

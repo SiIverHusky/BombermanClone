@@ -15,6 +15,7 @@ let tilemap = Array.from({ length: TILE_ROWS }, () => Array(TILE_COLS).fill(TILE
 // Function to update the tilemap based on server data
 function updateTilemap(serverTilemap) {
     tilemap = serverTilemap; // Replace the local tilemap with the server's tilemap
+    console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
 }
 
 // Function to draw the tilemap
@@ -58,3 +59,8 @@ function pixelToTile(x, y) {
         col: Math.floor((x - arenaX) / TILE_SIZE)
     };
 }
+
+// Listen for tilemap updates from the server
+ws.on("updateTilemap", (data) => {
+    updateTilemap(data.tilemap); // Update the local tilemap with the server's data
+});

@@ -1,6 +1,6 @@
 // Player object for the local player
 const player = {
-    id: null, // Unique player ID assigned by the server
+    id: null,
     x: 0,
     y: 0,
     width: 16 * scale,
@@ -11,7 +11,7 @@ const player = {
     maxBombs: 3,
     bombRange: 3,
     coins: 0,
-    collision: { row: 0, col: 0 } // Player's collision tile (feet position)
+    collisionPoint: { x: 0, y: 0 }
 };
 
 // Object to store other players
@@ -19,11 +19,19 @@ const otherPlayers = {};
 
 // Key state tracking
 const keys = {};
-window.addEventListener("keydown", (e) => keys[e.key] = true);
-window.addEventListener("keyup", (e) => keys[e.key] = false);
+window.addEventListener("keydown", (e) => {
+    keys[e.key] = true;
+    console.log(`Key pressed: ${e.key}`); // Log key press
+});
+window.addEventListener("keyup", (e) => {
+    keys[e.key] = false;
+    console.log(`Key released: ${e.key}`); // Log key release
+});
 
 // Function to update the local player's position
 function updatePlayerPosition() {
+    console.log("Updating player position..."); // Log position update
+
     if (player.isDead) return;
 
     let newX = player.x;
@@ -34,26 +42,14 @@ function updatePlayerPosition() {
     if (keys['a']) newX -= player.speed;
     if (keys['d']) newX += player.speed;
 
-    // Convert new positions to tile coordinates
-    const newTileX = pixelToTile(newX + player.width / 2, player.y + player.height).col;
-    const newTileY = pixelToTile(player.x + player.width / 2, newY + player.height).row;
-
-    // Check collisions with unwalkable tiles before updating position
-    if (isTileWalkable(newTileY, newTileX) &&
-        !isCollidingWithArena(newX, player.y) &&
-        !isCollidingWithBlocks(newX, player.y)) {
+    // Check collision with the tilemap
+    const { row, col } = pixelToTile(newX + player.width / 2, newY + player.height);
+    if (tilemap[row] && tilemap[row][col] === TILE_EMPTY) {
         player.x = newX;
-    }
-    if (isTileWalkable(newTileY, newTileX) &&
-        !isCollidingWithArena(player.x, newY) &&
-        !isCollidingWithBlocks(player.x, newY)) {
         player.y = newY;
     }
 
-    // Update the player's collision attribute
     updatePlayerCollision();
-
-    // Send the updated position to the server
     sendPlayerMove();
 }
 
@@ -61,18 +57,24 @@ function updatePlayerPosition() {
 function updatePlayerCollision() {
     const footX = player.x + player.width / 2;
     const footY = player.y + player.height;
-    const { row, col } = pixelToTile(footX, footY);
-    player.collision = { row, col };
+    player.collisionPoint = { x: footX, y: footY };
 }
 
 // Function to send the player's movement to the server
 function sendPlayerMove() {
+    const direction = {
+        x: keys['d'] - keys['a'], // 1 for right, -1 for left, 0 for no horizontal movement
+        y: keys['s'] - keys['w']  // 1 for down, -1 for up, 0 for no vertical movement
+    };
+
     ws.send(JSON.stringify({
         type: 'playerMove',
         id: player.id,
         x: player.x,
         y: player.y,
-        collision: player.collision
+        speed: player.speed,
+        direction: direction,
+        collision: player.collisionPoint
     }));
 }
 
@@ -102,17 +104,13 @@ function updateOtherPlayers(serverPlayers) {
     });
 }
 
-function isTileWalkable(newTileY, newTileX){
-    //console.log(newTileX, newTileY); //int, int
-    return true;
-}
+function placeBomb() {
+    const { x, y } = player.collisionPoint;
+    const { row, col } = pixelToTile(x, y);
 
-function isCollidingWithArena(newX, y){
-    //console.log(newX, y); //int, int
-    return true;
-}
-
-function isCollidingWithBlocks(newX, y){
-    //console.log(newX, y); //int, int
-    return true;
+    ws.send(JSON.stringify({
+        type: 'placeBomb',
+        row,
+        col
+    }));
 }

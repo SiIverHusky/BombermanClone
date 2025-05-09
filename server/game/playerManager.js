@@ -8,10 +8,13 @@ function addPlayer(playerStates, player) {
     ];
     const startPosition = startPositions[Object.keys(playerStates).length % 2];
 
+    const x = startPosition.col * TILE_SIZE * 4 + 40;
+    const y = startPosition.row * TILE_SIZE * 4 + 60;
+
     playerStates[player.id] = {
         id: player.id,
-        x: startPosition.col * TILE_SIZE * 4 + 40,
-        y: startPosition.row * TILE_SIZE * 4 + 60,
+        x: x,
+        y: y,
         width: TILE_SIZE * 4,
         height: TILE_SIZE * 6,
         speed: 0.5 * 4,
@@ -20,7 +23,7 @@ function addPlayer(playerStates, player) {
         maxBombs: 3,
         bombRange: 3,
         coins: 0,
-        collision: { row: startPosition.row, col: startPosition.col }
+        collisionPoint: { x: x + (TILE_SIZE * 4) / 2, y: y + TILE_SIZE * 6 }
     };
 }
 
@@ -30,17 +33,47 @@ function removePlayer(playerStates, playerId) {
 }
 
 // Function to process player movement
-function processPlayerMove(state, playerId, newX, newY) {
+function processPlayerMove(state, playerId, direction, speed) {
     const player = state.players[playerId];
-    if (!player) return;
+    if (!player || player.isDead) return false; // Return false if movement is invalid
 
-    const { row, col } = pixelToTile(newX + player.width / 2, newY + player.height);
+    const newX = player.x + direction.x * speed;
+    const newY = player.y + direction.y * speed;
 
-    if (isTileWalkable(state.tilemap, row, col)) {
+    const collisionX = newX + player.width / 2;
+    const collisionY = newY + player.height;
+
+    let moved = false;
+
+    // Check horizontal movement
+    if (
+        isTileWalkable(state.tilemap, collisionX, player.y + player.height) &&
+        !isCollidingWithArena(collisionX, player.y + player.height)
+    ) {
         player.x = newX;
-        player.y = newY;
-        player.collision = { row, col };
+        moved = true;
     }
+
+    // Check vertical movement
+    if (
+        isTileWalkable(state.tilemap, player.x + player.width / 2, collisionY) &&
+        !isCollidingWithArena(player.x + player.width / 2, collisionY)
+    ) {
+        player.y = newY;
+        moved = true;
+    }
+
+    // Update collision point
+    player.collisionPoint = {
+        x: player.x + player.width / 2,
+        y: player.y + player.height
+    };
+
+    if (moved) {
+        console.log(`Player ${playerId} moved to (${player.x}, ${player.y})`);
+    }
+
+    return moved; // Return true if the player moved
 }
 
 // Function to process bomb placement
@@ -48,7 +81,8 @@ function processPlaceBomb(state, playerId) {
     const player = state.players[playerId];
     if (!player || player.maxBombs <= 0) return;
 
-    const { row, col } = player.collision;
+    const { x, y } = player.collisionPoint;
+    const { row, col } = pixelToTile(x, y);
 
     if (state.tilemap[row][col] === TILE_EMPTY) {
         state.tilemap[row][col] = TILE_BOMB;
@@ -72,9 +106,25 @@ function pixelToTile(x, y) {
 }
 
 // Function to check if a tile is walkable
-function isTileWalkable(tilemap, row, col) {
+function isTileWalkable(tilemap, x, y) {
+    const { row, col } = pixelToTile(x, y);
+
+    if (row < 0 || row >= TILE_ROWS || col < 0 || col >= TILE_COLS) {
+        return false; // Out of bounds
+    }
+
     const tile = tilemap[row][col];
-    return tile === TILE_EMPTY;
+    return tile === TILE_EMPTY || tile === TILE_PICKUP;
+}
+
+// Function to check if the player is colliding with the arena boundaries
+function isCollidingWithArena(x, y) {
+    return (
+        x < arenaBounds.x ||
+        x > arenaBounds.x + arenaBounds.width ||
+        y < arenaBounds.y ||
+        y > arenaBounds.y + arenaBounds.height
+    );
 }
 
 module.exports = {
