@@ -1,118 +1,96 @@
-// WebSocket connection to the server
-const ws = new WebSocket('ws://localhost:8080');
+const urlParams = new URLSearchParams(window.location.search);
+const roomCode = urlParams.get("roomCode");
+const ws = io("/game", { query: { roomCode } });
 
-// Handle WebSocket messages from the server
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+// WebSocket 연결 성공
+ws.on("connect", () => {
+    console.log("Connected to the server!");
+    gameLoop();
+});
 
-    switch (data.type) {
-        case 'initialize':
-            initializeGame(data);
-            break;
-        case 'updateTilemap':
-            updateTilemap(data.tilemap);
-            break;
-        case 'updatePlayers':
-            updateOtherPlayers(data.players);
-            break;
-        case 'updateItems':
-            updateItems(data.items);
-            break;
-        case 'playerHit':
-            handlePlayerHit(data.playerId);
-            break;
-    }
-};
+// WebSocket 에러
+ws.on("error", (error) => {
+    console.error("WebSocket error:", error);
+});
 
-// Initialize the game state when the server sends the initial data
+// WebSocket 연결 종료
+ws.on("disconnect", () => {
+    console.log("Disconnected from the server.");
+});
+
+// 서버로부터 수신된 이벤트 처리
+ws.on("initialize", (data) => {
+    initializeGame(data);
+});
+
+ws.on("updateTilemap", (data) => {
+    updateTilemap(data.tilemap);
+});
+
+ws.on("updatePlayers", (data) => {
+    updateOtherPlayers(data.players);
+});
+
+ws.on("updateItems", (data) => {
+    updateItems(data.items);
+});
+
+ws.on("playerHit", (data) => {
+    handlePlayerHit(data.playerId);
+});
+
+ws.on("timerUpdate", (data) => {
+    updateTimerDisplay(data.seconds * 1000); // 서버는 초 단위로 보냄
+});
+
+ws.on("gameOver", (data) => {
+    handleEndGame(data.message);
+});
+
+// 초기화 함수
 function initializeGame(data) {
-    player.id = data.playerId; // Assign the player ID
-    updateTilemap(data.tilemap); // Initialize the tilemap
-    updateItems(data.items); // Initialize items
-    updateOtherPlayers(data.players); // Initialize other players
+    player.id = data.playerId;
+    updateTilemap(data.tilemap);
+    updateItems(data.items);
+    updateOtherPlayers(data.players);
 }
 
-// Handle when a player is hit by an explosion
+// 플레이어 피격 처리
 function handlePlayerHit(playerId) {
     if (player.id === playerId) {
         player.isDead = true;
-        player.color = "red"; // Change the player's color to red
+        player.color = "red";
         console.log("You were hit by an explosion!");
     } else if (otherPlayers[playerId]) {
         otherPlayers[playerId].isDead = true;
-        otherPlayers[playerId].color = "red"; // Change their color to red
+        otherPlayers[playerId].color = "red";
         console.log(`Player ${playerId} was hit by an explosion!`);
     }
 }
 
-// Main game loop
-function gameLoop() {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the arena
-    drawArena();
-
-    // Draw the tilemap
-    drawTilemap();
-
-    // Draw items
-    drawItems();
-
-    // Update and draw the local player
-    updatePlayerPosition();
-    drawPlayer();
-
-    // Draw other players
-    drawOtherPlayers();
-
-    // Check for item collection
-    checkItemCollection();
-
-    // Request the next frame
-    requestAnimationFrame(gameLoop);
-}
-
-// Start the game loop once the WebSocket connection is open
-ws.onopen = () => {
-    console.log("Connected to the server!");
-    gameLoop();
-};
-
-// Handle WebSocket errors
-ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-};
-
-// Handle WebSocket disconnection
-ws.onclose = () => {
-    console.log("Disconnected from the server.");
-};
-
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    switch (data.type) {
-        case 'updateTimer':
-            updateTimerDisplay(data.remainingTime);
-            break;
-        case 'endGame':
-            handleEndGame(data.message);
-            break;
-        // Other cases...
-    }
-};
-
-// Function to update the timer display
+// 타이머 디스플레이 업데이트
 function updateTimerDisplay(remainingTime) {
-    const timerElement = document.getElementById('timer');
+    const timerElement = document.getElementById("timer");
     const minutes = Math.floor(remainingTime / 60000);
     const seconds = Math.floor((remainingTime % 60000) / 1000);
-    timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
 
-// Function to handle the end game message
+// 게임 종료 처리
 function handleEndGame(message) {
-    alert(message); // Display the end game message
-    // Optionally, stop the game loop or redirect to a results screen
+    alert(message);
+    window.location.href = "/waiting.html"+`?roomCode=${roomCode}`;
+}
+
+// 게임 루프
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawArena();
+    drawTilemap();
+    drawItems();
+    updatePlayerPosition();
+    drawPlayer();
+    drawOtherPlayers();
+    checkItemCollection();
+    requestAnimationFrame(gameLoop);
 }

@@ -1,9 +1,58 @@
 const { initializeGame, handleBombExplosions } = require('./gameLogic');
 const { placeItems } = require('./itemManager');
+const { rooms } = require("../room");
 
 // Game constants
 const GAME_DURATION = 3 * 60 * 1000; // 3 minutes in milliseconds
 const activeGames = new Map(); // Map to track active games by roomCode
+
+function setupGameWebSocket(io, authSession) {
+
+    io.use((socket, next) => {
+        authSession(socket.request, {}, next);
+    });
+
+    io.on("connection", (socket) => {
+        const roomCode = socket.handshake.query.roomCode;
+        const session = socket.request.session;
+        console.log("Game socket connected to room:", roomCode);
+
+        //Check if the user is authenticated
+        if (!session.user) {
+            socket.emit("error", { message: "User not authenticated" });
+            socket.disconnect();
+            return;
+        }
+        
+        //Check if the roomCode is valid
+        if (!rooms.has(roomCode)) {
+            socket.emit("error", { message: "Room does not exist" });
+            socket.disconnect();
+            return;
+        }
+        //Check if the player is in the room
+        if(!rooms.get(roomCode).players.some(player => player.username === session.user.username)) {
+            console.log("User not in room:", session.user.username, rooms.get(roomCode).players );
+            socket.emit("error", { message: "User not in room" });
+            socket.disconnect();
+            return;
+        }
+        const room = rooms.get(roomCode);
+        socket.join(roomCode); // Add socket to room
+
+        /* Main Game logic */
+        const players = room.players;
+        console.log("Players in the room:", players);
+        startGameForRoom(roomCode, players, io);
+
+
+        socket.on("disconnect", () => {
+            console.log(`Players disconnected from game: ${socket.id}, Room: ${roomCode}`);
+        });
+
+    });
+
+}
 
 function startGameForRoom(roomCode, players, wss) {
     if (activeGames.has(roomCode)) {
@@ -48,7 +97,7 @@ function startGameForRoom(roomCode, players, wss) {
     });
 
     // Place items on the map
-    placeItems(gameState);
+    placeItems(gameState); ///////////////////////// Error
 
     // Store the game state in the activeGames map
     activeGames.set(roomCode, gameState);
@@ -106,9 +155,14 @@ function endGame(roomCode, gameState, message, wss) {
 
     gameState.gameEnded = true;
 
-    wss.to(roomCode).emit('endGame', { message });
-
+    
+    wss.to(roomCode).emit('gameOver', { message });
+    const room = rooms.get(roomCode);
+    if (room) {
+        room.status = "gameover";
+    }
     console.log(`Game for room ${roomCode} ended: ${message}`);
+
 }
 
-module.exports = { startGameForRoom };
+module.exports = { setupGameWebSocket };

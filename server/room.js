@@ -1,4 +1,4 @@
-const { startGameForRoom } = require('./game/gameServer'); // Import the function to start the game
+//const { startGameForRoom } = require('./game/gameServer'); // Import the function to start the game
 
 // Map to store room data: roomCode -> { players: [], status: 'waiting' }
 const rooms = new Map();
@@ -47,7 +47,8 @@ function destroyRoom(roomCode) {
 }
 
 // Function to set up WebSocket communication for room management
-function setupRoomWebSocket(io, gameNamespace, authSession) {
+function setupRoomWebSocket(gameNamespace, authSession) {
+    const io = gameNamespace;
     io.on("connection", (socket) => {
         const roomCode = socket.handshake.query.roomCode;
 
@@ -81,7 +82,7 @@ function setupRoomWebSocket(io, gameNamespace, authSession) {
             io.to(roomCode).emit("gameStarted");
 
             // Use the passed gameNamespace to start the game
-            startGameForRoom(roomCode, room.players, gameNamespace);
+            //startGameForRoom(roomCode, room.players, gameNamespace);
         });
 
         // Handle client disconnection
@@ -106,4 +107,4 @@ function setupRoomWebSocket(io, gameNamespace, authSession) {
     });
 }
 
-module.exports = { createRoom, joinRoom, destroyRoom, setupRoomWebSocket };
+module.exports = { createRoom, joinRoom, destroyRoom, setupRoomWebSocket, rooms };

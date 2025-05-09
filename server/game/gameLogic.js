@@ -232,5 +232,5 @@ module.exports = {
     handlePlayerMove,
     handlePlaceBomb,
     handleBombExplosions,
-    saveGameStats
+    saveGameStats,
 };

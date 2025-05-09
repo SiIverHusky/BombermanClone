@@ -10,5 +10,13 @@
   {
     "username": "dawson",
     "password": "$2b$10$GoWRVe57w.PbrTWOfUdiNO/P1BGhqbDEZLseD1cyCu9gMuzhGGO3a"
+  },
+  {
+    "username": "a",
+    "password": "$2b$10$znHNX0ZvPN8xskbqSGa./.Z0f7q7pq6zenmQfG.lA0ikIdpla5.36"
+  },
+  {
+    "username": "b",
+    "password": "$2b$10$5fUdibYhmNrrQ1jglnnjGeaCmHL8jA7jEU29ZKE3RaZMcMUYtbCdO"
   }
 ]

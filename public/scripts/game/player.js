@@ -98,3 +98,18 @@ function updateOtherPlayers(serverPlayers) {
         }
     });
 }
+
+function isTileWalkable(newTileY, newTileX){
+    //console.log(newTileX, newTileY); //int, int
+    return true;
+}
+
+function isCollidingWithArena(newX, y){
+    //console.log(newX, y); //int, int
+    return true;
+}
+
+function isCollidingWithBlocks(newX, y){
+    //console.log(newX, y); //int, int
+    return true;
+}
