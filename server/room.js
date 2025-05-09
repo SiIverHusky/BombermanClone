@@ -33,8 +33,10 @@ function joinRoom(req, res) {
         return res.status(400).json({ status: 'error', message: 'Room is full' });
     }
 
-    room.players.push({ id: req.session.id, username: req.session.user.username || 'Guest' });
-    console.log(`${req.session.user.username || 'Guest'} joined room ${roomCode}`);
+    const playerKey = room.players.length === 0 ? "player1" : "player2";
+    room.players.push({ id: req.session.id, username: req.session.user.username || playerKey });
+
+    console.log(`${req.session.user.username || playerKey} joined room ${roomCode}`);
     res.status(200).json({ message: 'Join-room successful' });
 }
 

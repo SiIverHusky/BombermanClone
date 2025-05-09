@@ -1,30 +1,35 @@
 const TILE_SIZE = 16;
 
 // Function to add a new player
-function addPlayer(playerStates, player) {
-    const startPositions = [
-        { row: 0, col: 0 },
-        { row: 10, col: 12 }
-    ];
-    const startPosition = startPositions[Object.keys(playerStates).length % 2];
+function addPlayer(playerStates, player, playerKey) {
+    const startPositions = {
+        player1: { row: 0, col: 0 }, // Top-left corner for Player 1
+        player2: { row: 10, col: 12 } // Bottom-right corner for Player 2
+    };
 
-    const x = startPosition.col * TILE_SIZE * 4 + 40;
-    const y = startPosition.row * TILE_SIZE * 4 + 60;
+    const startPosition = startPositions[playerKey];
 
-    playerStates[player.id] = {
+    // Convert tile coordinates to pixel coordinates
+    const x = startPosition.col * TILE_SIZE;
+    const y = startPosition.row * TILE_SIZE;
+
+    // Add the player to the playerStates object
+    playerStates[playerKey] = {
         id: player.id,
         x: x,
         y: y,
-        width: TILE_SIZE * 4,
-        height: TILE_SIZE * 6,
-        speed: 0.5 * 4,
-        color: Object.keys(playerStates).length === 0 ? "red" : "blue",
+        width: TILE_SIZE * 4, // Adjusted for scaling
+        height: TILE_SIZE * 6, // Adjusted for scaling
+        speed: 0.5 * 4, // Adjusted for scaling
+        color: playerKey === "player1" ? "red" : "blue",
         isDead: false,
         maxBombs: 3,
         bombRange: 3,
         coins: 0,
         collisionPoint: { x: x + (TILE_SIZE * 4) / 2, y: y + TILE_SIZE * 6 }
     };
+
+    console.log(`${playerKey} added at (${x}, ${y})`);
 }
 
 // Function to remove a player
@@ -76,27 +81,6 @@ function processPlayerMove(state, playerId, direction, speed) {
     return moved; // Return true if the player moved
 }
 
-// Function to process bomb placement
-function processPlaceBomb(state, playerId) {
-    const player = state.players[playerId];
-    if (!player || player.maxBombs <= 0) return;
-
-    const { x, y } = player.collisionPoint;
-    const { row, col } = pixelToTile(x, y);
-
-    if (state.tilemap[row][col] === TILE_EMPTY) {
-        state.tilemap[row][col] = TILE_BOMB;
-        state.bombs.push({
-            row,
-            col,
-            timer: Date.now() + 3000,
-            range: player.bombRange
-        });
-
-        player.maxBombs--;
-    }
-}
-
 // Utility function to convert pixel coordinates to tile coordinates
 function pixelToTile(x, y) {
     return {
@@ -130,6 +114,5 @@ function isCollidingWithArena(x, y) {
 module.exports = {
     addPlayer,
     removePlayer,
-    processPlayerMove,
-    processPlaceBomb
+    processPlayerMove
 };

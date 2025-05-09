@@ -15,7 +15,7 @@ let tilemap = Array.from({ length: TILE_ROWS }, () => Array(TILE_COLS).fill(TILE
 // Function to update the tilemap based on server data
 function updateTilemap(serverTilemap) {
     tilemap = serverTilemap; // Replace the local tilemap with the server's tilemap
-    console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
+    // console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
 }
 
 // Function to draw the tilemap
@@ -33,13 +33,14 @@ function drawTilemap() {
                 // Draw destructible bricks
                 ctx.fillStyle = "brown";
                 ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-            } else if (tileType === TILE_PICKUP) {
-                // Draw items (handled in items.js)
-                drawItemAtTile(row, col);
-            } else if (tileType === TILE_BOMB) {
-                // Draw bombs (handled in player.js or bombs.js)
-                drawBombAtTile(row, col);
-            }
+            } 
+            // else if (tileType === TILE_PICKUP) {
+            //     // Draw items (handled in items.js)
+            //     drawItemAtTile(row, col);
+            // } else if (tileType === TILE_BOMB) {
+            //     // Draw bombs (handled in player.js or bombs.js)
+            //     drawBombAtTile(row, col);
+            // }
         }
     }
 }
@@ -59,8 +60,3 @@ function pixelToTile(x, y) {
         col: Math.floor((x - arenaX) / TILE_SIZE)
     };
 }
-
-// Listen for tilemap updates from the server
-ws.on("updateTilemap", (data) => {
-    updateTilemap(data.tilemap); // Update the local tilemap with the server's data
-});

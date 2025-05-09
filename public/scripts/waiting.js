@@ -50,7 +50,8 @@ $(document).ready(function () {
     // Handle game start event
     socket.on("gameStarted", () => {
         // Redirect to the game page
-        window.location.href = `/game.html?roomCode=${encodeURIComponent(roomCode)}`;
+        const sessionId = socket.id;
+        window.location.href = `/game.html?roomCode=${encodeURIComponent(roomCode)}&sessionId=${encodeURIComponent(sessionId)}`;
     });
 
     // Handle errors from the server

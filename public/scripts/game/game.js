@@ -1,10 +1,10 @@
-const urlParams = new URLSearchParams(window.location.search);
-const roomCode = urlParams.get("roomCode");
 const ws = io("/game", { query: { roomCode } });
+
 
 // WebSocket 연결 성공
 ws.on("connect", () => {
     console.log("Connected to the server!");
+    ws.emit("playerReady", { roomCode }); // Notify the server that the player is ready
     gameLoop();
 });
 
@@ -28,7 +28,7 @@ ws.on("updateTilemap", (data) => {
 });
 
 ws.on("updatePlayers", (data) => {
-    updateOtherPlayers(data.players); // Sync other players' positions
+    updatePlayers(data.players); // Sync players' positions
 });
 
 ws.on("updateItems", (data) => {
@@ -47,30 +47,50 @@ ws.on("gameOver", (data) => {
     handleEndGame(data.message); // Handle game over events
 });
 
+ws.on("updateBombs", (data) => {
+    bombs.length = 0; // Clear the local bombs array
+    bombs.push(...data.bombs); // Update bombs with the server's data
+});
+
+ws.on("updateExplosions", (data) => {
+    explosions.push(...data.explosions); // Add new explosions from the server
+});
+
 // 초기화 함수
 function initializeGame(data) {
-    player.id = data.playerId;
-    player.x = data.players[player.id].x;
-    player.y = data.players[player.id].y;
-    player.color = data.players[player.id].color || "white"; // Default to white if color is missing
+    player1.id = data.players[0].id;
+    player1.x = data.players[0].x;
+    player1.y = data.players[0].y;
+
+    player2.id = data.players[1].id;
+    player2.x = data.players[1].x;
+    player2.y = data.players[1].y;
 
     updateTilemap(data.tilemap); // Initialize the tilemap
     updateItems(data.items); // Initialize items
-    updateOtherPlayers(data.players); // Initialize other players
+}
+
+function updatePlayers(serverPlayers) {
+    if (serverPlayers[player1.id]) {
+        Object.assign(player1, serverPlayers[player1.id]);
+    }
+    if (serverPlayers[player2.id]) {
+        Object.assign(player2, serverPlayers[player2.id]);
+    }
 }
 
 // 플레이어 피격 처리
-function handlePlayerHit(playerId) {
-    if (player.id === playerId) {
-        player.isDead = true;
-        player.color = "red";
-        console.log("You were hit by an explosion!");
-    } else if (otherPlayers[playerId]) {
-        otherPlayers[playerId].isDead = true;
-        otherPlayers[playerId].color = "red";
-        console.log(`Player ${playerId} was hit by an explosion!`);
-    }
-}
+// function handlePlayerHit(playerId) {
+//     if (player.id === playerId) {
+//         player.isDead = true;
+//         player.color = "red";
+//         console.log("You were hit by an explosion!");
+//     } else if (otherPlayers[playerId]) {
+//         otherPlayers[playerId].isDead = true;
+//         otherPlayers[playerId].color = "red";
+//         console.log(`Player ${playerId} was hit by an explosion!`);
+//     }
+// }
 
 // 타이머 디스플레이 업데이트
 function updateTimerDisplay(remainingTime) {
@@ -96,12 +116,10 @@ function gameLoop() {
     drawGrid();
     drawTilemap(); // Draw the updated tilemap
     drawItems(); // Draw items on the map
-
-    // Broken
     updatePlayerPosition(); // Update the local player's position
-    drawPlayer(); // Draw the local player
-    drawOtherPlayers(); // Draw other players
-    // checkItemCollection(); // Uncomment if item collection logic is implemented
+    drawPlayers(); // Draw both players
+    drawBombs(); // Draw bombs
+    drawExplosions(); // Draw explosions
 
     requestAnimationFrame(gameLoop); // Continue the game loop
 }
