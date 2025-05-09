@@ -44,10 +44,6 @@ ws.on("updateItems", (data) => {
     updateItems(data.items); // Sync items on the map
 });
 
-ws.on("playerHit", (data) => {
-    handlePlayerHit(data.playerId); // Handle player hit events
-});
-
 ws.on("timerUpdate", (data) => {
     updateTimerDisplay(data.seconds * 1000); // 서버는 초 단위로 보냄
 });
@@ -59,8 +55,7 @@ ws.on("gameOver", (data) => {
 });
 
 ws.on("updateBombs", (data) => {
-    bombs.length = 0; // Clear the local bombs array
-    bombs.push(...data.bombs); // Update bombs with the server's data
+    updateBombs(data.bombs); // Update bombs with the server's data
 });
 
 ws.on("updateExplosions", (data) => {
@@ -72,7 +67,12 @@ function handleInput(key) {
     const validKeys = ["W", "A", "S", "D", " ", "G"];
     if (validKeys.includes(key.toUpperCase())) {
         console.log("Key pressed:", key.toUpperCase());
-        ws.emit("playerInput", { input: key.toUpperCase(), username: username });
+        if (username === player1.username) {
+            ws.emit("playerInput", { input: key.toUpperCase(), username: username, tile: pixelToTile(player1.collisionPoint.x, player1.collisionPoint.y) });
+        }
+        else {
+            ws.emit("playerInput", { input: key.toUpperCase(), username: username, tile: pixelToTile(player2.collisionPoint.x, player2.collisionPoint.y) });
+        }
     }
 }
 
@@ -124,18 +124,20 @@ function updatePlayers(serverPlayers) {
     drawPlayers();
 }
 
-// 플레이어 피격 처리
-// function handlePlayerHit(playerId) {
-//     if (player.id === playerId) {
-//         player.isDead = true;
-//         player.color = "red";
-//         console.log("You were hit by an explosion!");
-//     } else if (otherPlayers[playerId]) {
-//         otherPlayers[playerId].isDead = true;
-//         otherPlayers[playerId].color = "red";
-//         console.log(`Player ${playerId} was hit by an explosion!`);
-//     }
-// }
+// Function to check if a player is hit by an explosion
+function checkPlayerHit(player) {
+    explosions.forEach(explosion => {
+        const { row, col } = player.collisionPoint;
+        if (explosion.row === row && explosion.col === col) {
+            player.isDead = true;
+            player.color = "red";
+            console.log(`${player.username} was hit by an explosion!`);
+
+            // Emit the player hit event to the server
+            ws.emit("playerHit", { playerUsername: player.username });
+        }
+    });
+}
 
 // 타이머 디스플레이 업데이트
 function updateTimerDisplay(remainingTime) {
@@ -151,8 +153,25 @@ function handleEndGame(message) {
     window.location.href = "/waiting.html" + `?roomCode=${roomCode}`;
 }
 
-// 게임 루프
-function gameLoop() {
+// Function to draw bombs
+function drawBombs() {
+    bombs.forEach(bomb => {
+        const { x, y } = tileToPixel(bomb.row, bomb.col);
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE / 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+}
+
+// Function to update bombs from server data
+function updateBombs(serverBombs) {
+    bombs.length = 0;
+    bombs.push(...serverBombs);
+}
+
+// Updated game loop to integrate bomb logic and synchronize with the server
+gameLoop = function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBounds();
@@ -165,11 +184,27 @@ function gameLoop() {
     drawBombs();
     drawExplosions();
 
-    requestAnimationFrame(gameLoop); // Continue the game loop
-}
+    // Update bombs and explosions
+    updateBombs();
+
+    // Check if players are hit by explosions
+    checkPlayerHit(player1);
+    checkPlayerHit(player2);
+
+    requestAnimationFrame(gameLoop);
+};
 
 // Add logic to handle exiting the room
 function exitRoom() {
     const redirectUrl = `/home.html?username=${username}`;
     window.location.href = redirectUrl;
+}
+
+// Function to remove the earliest placed bomb (notify the server)
+function popBomb() {
+    ws.send(JSON.stringify({
+        type: 'popBomb'
+    }));
+
+    console.log("Requested to remove the earliest placed bomb.");
 }

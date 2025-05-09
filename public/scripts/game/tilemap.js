@@ -18,6 +18,10 @@ function updateTilemap(serverTilemap) {
     // console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
 }
 
+function isTileWalkable(row, col) {
+    return tilemap[row] && (tilemap[row][col] === TILE_EMPTY || tilemap[row][col] === TILE_PICKUP);
+}
+
 // Function to draw the tilemap
 function drawTilemap() {
     for (let row = 0; row < TILE_ROWS; row++) {

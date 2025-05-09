@@ -1,61 +1,45 @@
-// Player 1 and Player 2 objects
-const player1 = {
-    username: null,
+player1 = {
     x: 0,
     y: 0,
     width: 16 * scale,
     height: 24 * scale,
     speed: 0.5 * scale,
     color: "red",
-    isDead: false,
-    maxBombs: 3,
-    bombRange: 3,
-    coins: 0,
-    collisionPoint: { x: 0, y: 0 },
+    isDead: false, // Player starts alive
+    maxBombs: 3, // Maximum number of bombs the player can drop
+    bombRange: 3, // Default bomb explosion range
+    coins: 0, // Player's coin count
+    collision: { row: 0, col: 0 } // Player's collision tile (feet position)
 };
 
-const player2 = {
-    username: null,
+player2 = {
     x: 0,
     y: 0,
     width: 16 * scale,
     height: 24 * scale,
     speed: 0.5 * scale,
     color: "blue",
-    isDead: false,
-    maxBombs: 3,
-    bombRange: 3,
-    coins: 0,
-    collisionPoint: { x: 0, y: 0 },
+    isDead: false, // Player starts alive
+    maxBombs: 3, // Maximum number of bombs the player can drop
+    bombRange: 3, // Default bomb explosion range
+    coins: 0, // Player's coin count
+    collision: { row: 0, col: 0 } // Player's collision tile (feet position)
 };
 
+const keys = {};
+const lastKeys = {'a':false, 's':false, 'd':false, 'w':false}; // Track the last key pressed
+window.addEventListener("keydown", (e) => keys[e.key] = true);
+window.addEventListener("keyup", (e) => keys[e.key] = false);
 
-// Function to update the position of the local player
-function updatePlayerPosition() {
-    if (player1.username === username) {
-        movePlayer(player1);
-    }
-    if (player2.username === username) {
-        movePlayer(player2);
-    }
-}
+const FOOT_COLLISION_SIZE = 4 * scale; // Define the size of the square for collision detection
 
-function isCollidingWithBlocks(x, y) {
-    const footX = x + player.width / 2 - FOOT_COLLISION_SIZE / 2;
-    const footY = y + player.height - FOOT_COLLISION_SIZE;
+// Collision detection functions
 
-    for (row = 0; row < TILE_ROWS; row++) {
-        for (col = 0; col < TILE_COLS; col++) {
-            const { x: blockX, y: blockY } = tileToPixel(row, col);
-            if (tilemap[row][col] === TILE_BLOCK) {
-                if (footX < blockX + TILE_SIZE && footX + FOOT_COLLISION_SIZE > blockX &&
-                    footY < blockY + TILE_SIZE && footY + FOOT_COLLISION_SIZE > blockY) {
-                    return true; // Collision detected
-                }
-            }
-        }
-    }
-    return false; // No collision
+function updatePlayerCollision(player) {
+    const footX = player.x + player.width / 2;
+    const footY = player.y + player.height;
+    const { row, col } = pixelToTile(footX, footY);
+    player.collision = { row, col };
 }
 
 function isCollidingWithArena(x, y) {
@@ -70,90 +54,100 @@ function isCollidingWithArena(x, y) {
     );
 }
 
-function movePlayer(player) {
-    if (player.isDead) return;
+function isCollidingWithBlocks(x, y) {
+    const footX = x + player.width / 2 - FOOT_COLLISION_SIZE / 2;
+    const footY = y + player.height - FOOT_COLLISION_SIZE;
 
-    let newX = player.x;
-    let newY = player.y;
-
-    if (keys['w']) newY -= player.speed;
-    if (keys['s']) newY += player.speed;
-    if (keys['a']) newX -= player.speed;
-    if (keys['d']) newX += player.speed;
-
-    // Convert new positions to tile coordinates
-    const newTileX = pixelToTile(newX + player.width / 2, player.y + player.height).col;
-    const newTileY = pixelToTile(player.x + player.width / 2, newY + player.height).row;
-
-    // Check collisions with unwalkable tiles before updating position
-    if (isTileWalkable(pixelToTile(newX + player.width / 2, player.y + player.height).row, newTileX) &&
-        !isCollidingWithArena(newX, player.y) && !isCollidingWithBlocks(newX, player.y)) {
-        player.x = newX;
-    }
-    if (isTileWalkable(newTileY, pixelToTile(player.x + player.width / 2, newY + player.height).col) &&
-        !isCollidingWithArena(player.x, newY) && !isCollidingWithBlocks(player.x, newY)) {
-        player.y = newY;
-    }
-
-    // Update the player's collision attribute
-    updatePlayerCollision(player);
-    sendPlayerMove(player);
+    return blocks.some(block => (
+        footX < block.x + block.width &&
+        footX + FOOT_COLLISION_SIZE > block.x &&
+        footY < block.y + block.height &&
+        footY + FOOT_COLLISION_SIZE > block.y
+    ));
 }
 
-// Function to update the player's collision attribute
-function updatePlayerCollision(player) {
-    const footX = player.x + player.width / 2;
-    const footY = player.y + player.height;
-    player.collisionPoint = { x: footX, y: footY };
-}
+// Bomb Functions
+const bombs = []; // Array to store active bombs
+const explosions = []; // Array to store active explosions
 
-// Function to send the player's movement to the server
-function sendPlayerMove(player) {
-    ws.send(JSON.stringify({
-        type: 'playerMove',
-        id: player.id,
-        x: player.x,
-        y: player.y,
-        speed: player.speed,
-        collision: player.collisionPoint,
-    }));
-}
-
-// Function to render a player
-function drawPlayer(player) {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-}
-
-// Function to render both players
-function drawPlayers() {
-    drawPlayerWithAnimation(player1);
-    drawPlayerWithAnimation(player2);
-}
-
-// Bombs and explosions will now be managed by the server
-const bombs = [];
-const explosions = [];
-
-// Function to place a bomb (notify the server)
-function placeBomb(player) {
-
-    if (player.maxBombs <= 0) {
-        console.log("No bombs available to place.");
+// Drop a bomb at the player's current position
+function dropBomb(player) {
+    // Check if the player has reached the maximum number of bombs
+    if (bombs.filter(bomb => bomb.player === player).length >= player.maxBombs) {
+        console.log("Maximum number of bombs reached!");
         return;
     }
 
-    const { x, y } = player.collisionPoint;
-    const { row, col } = pixelToTile(x, y);
+    const { row, col } = player.collision;
 
-    ws.send(JSON.stringify({
-        type: 'placeBomb',
-        row,
-        col,
-        playerUsername: player.username
-    }));
+    // Check if the tile is empty before placing the bomb
+    if (tilemap[row][col] === TILE_EMPTY) {
+        // Place the bomb in the tilemap
+        tilemap[row][col] = TILE_BOMB;
+        console.log("Bomb placed at: ", row, col);
 
-    player.maxBombs--;
+        // Add the bomb to the bombs array
+        bombs.push({
+            row,
+            col,
+            x: arenaX + col * TILE_SIZE + TILE_SIZE / 4, // Center the bomb in the tile
+            y: arenaY + row * TILE_SIZE + TILE_SIZE / 4,
+            size: TILE_SIZE / 2, // Bomb size
+            placedAt: Date.now(),
+            timer: Date.now() + 3000,
+            range: player.bombRange, // Use the player's bomb range
+            player: player // Track the player who placed the bomb
+        });
+
+        // Move the player to the next available tile
+        movePlayerToNextTile(row, col);
+    }
+}
+
+// Move the player to the next available tile
+function movePlayerToNextTile(bombRow, bombCol) {
+    const directions = [
+        { row: -1, col: 0 }, // Up
+        { row: 1, col: 0 },  // Down
+        { row: 0, col: -1 }, // Left
+        { row: 0, col: 1 }   // Right
+    ];
+
+    let closestTile = null;
+    let minDistance = Infinity;
+
+    // Calculate the player's foot position
+    const playerFootX = player.x + player.width / 2;
+    const playerFootY = player.y + player.height;
+
+    for (const { row: dRow, col: dCol } of directions) {
+        const newRow = bombRow + dRow;
+        const newCol = bombCol + dCol;
+
+        // Check if the tile is walkable
+        if (isTileWalkable(newRow, newCol) && tilemap[newRow][newCol] !== TILE_BOMB) {
+            const { x, y } = tileToPixel(newRow, newCol);
+            const tileCenterX = x + TILE_SIZE / 2;
+            const tileCenterY = y + TILE_SIZE / 2;
+
+            // Calculate distance from the player's feet to the tile center
+            const distance = Math.hypot(playerFootX - tileCenterX, playerFootY - tileCenterY);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestTile = { x, y, row: newRow, col: newCol };
+            }
+        }
+    }
+
+    if (closestTile) {
+        // Move the player to the closest walkable tile
+        player.x = closestTile.x + TILE_SIZE / 2 - player.width / 2; // Center horizontally
+        player.y = closestTile.y + TILE_SIZE - player.height;        // Align feet vertically
+
+        // Update the player's collision attribute
+        updatePlayerCollision(player);
+    }
 }
 
 // Update bombs (handle explosion logic)
@@ -239,34 +233,67 @@ function createExplosion(row, col, range) {
     }
 }
 
-// Function to draw bombs
-function drawBombs() {
-    bombs.forEach(bomb => {
-        const { x, y } = tileToPixel(bomb.row, bomb.col);
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE / 2, 0, Math.PI * 2);
-        ctx.fill();
-    });
-}
-
-// Function to draw explosions
 function drawExplosions() {
-    const now = Date.now();
-    explosions.forEach((explosion, index) => {
-        if (now >= explosion.expiresAt) {
-            explosions.splice(index, 1);
-        } else {
-            explosion.tiles.forEach(tile => {
-                const { x, y } = tileToPixel(tile.row, tile.col);
-                ctx.fillStyle = "orange";
-                ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-            });
-        }
+    ctx.fillStyle = "orange";
+    explosions.forEach(explosion => {
+        const { x, y } = tileToPixel(explosion.row, explosion.col);
+        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
     });
 }
 
-// Sprites
+// Draw bombs
+function drawBombs() {
+    ctx.fillStyle = "red";
+    bombs.forEach(bomb => {
+        ctx.fillRect(bomb.x, bomb.y, bomb.size, bomb.size);
+    });
+}
+
+
+// Function to update the position of a player
+function updatePlayer(player) {
+    if (player.isDead) return;
+
+    let newX = player.x;
+    let newY = player.y;
+
+    if (keys['w']) newY -= player.speed;
+    if (keys['s']) newY += player.speed;
+    if (keys['a']) newX -= player.speed;
+    if (keys['d']) newX += player.speed;
+
+    // Convert new positions to tile coordinates
+    const newTileX = pixelToTile(newX + player.width / 2, player.y + player.height).col;
+    const newTileY = pixelToTile(player.x + player.width / 2, newY + player.height).row;
+
+    // Check collisions with unwalkable tiles before updating position
+    if (isTileWalkable(pixelToTile(newX + player.width / 2, player.y + player.height).row, newTileX) &&
+        !isCollidingWithArena(newX, player.y) && !isCollidingWithBlocks(newX, player.y)) {
+        player.x = newX;
+    }
+    if (isTileWalkable(newTileY, pixelToTile(player.x + player.width / 2, newY + player.height).col) &&
+        !isCollidingWithArena(player.x, newY) && !isCollidingWithBlocks(player.x, newY)) {
+        player.y = newY;
+    }
+
+    // Update the player's collision attribute
+    updatePlayerCollision(player);
+}
+
+// Function to draw a player
+function drawPlayer(player) {
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+
+// Function to set the player's position based on tile coordinates
+function setPlayerPosition(row, col) {
+    const { x, y } = tileToPixel(row, col);
+    player.x = x + TILE_SIZE / 2 - player.width / 2; // Center horizontally
+    player.y = y + TILE_SIZE - player.height;        // Align feet to the center of the tile
+}
+
 function spritePlayer(color, animationState = "stillDown", frameIndex = 0) {
     const spritesheet = new Image();
     spritesheet.src = "images/Sprites/player4.png";
@@ -359,4 +386,9 @@ function drawPlayerWithAnimation(player) {
 
     // Draw the player sprite
     spritePlayer(player.color, animationState, frameIndex);
+
+    // Draw bombs and explosions
+    drawBombs();
+    drawExplosions();
 }
+

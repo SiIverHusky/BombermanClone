@@ -25,9 +25,22 @@ const ITEM_SIZES = {
 // Local copy of items (received from the server)
 let items = [];
 
-// Function to update items based on server data
+// Function to collect an item (notify the server)
+function collectItem(item) {
+    ws.send(JSON.stringify({
+        type: "collectItem",
+        item
+    }));
+
+    console.log(`Requested to collect item at (${item.row}, ${item.col})`);
+}
+
+// Update the items array and synchronize with the server
 function updateItems(serverItems) {
     items = serverItems; // Replace local items with the server's items
+
+    // Redraw items on the map
+    drawItems();
 }
 
 // Function to draw items on the map

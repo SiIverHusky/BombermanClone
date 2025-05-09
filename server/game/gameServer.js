@@ -1,7 +1,7 @@
 const { initializeGameState, handleBombExplosions } = require('./gameLogic');
 const { addPlayer, removePlayer, processPlayerMove } = require('./playerManager');
 const { placeItems, handleItemCollection } = require('./itemManager');
-const { placeBomb, updateBombManager } = require('./bombManager');
+const { placeBomb, popBomb } = require('./bombManager');
 
 const { rooms } = require("../room");
 
@@ -129,7 +129,7 @@ function setupGameWebSocket(io, authSession) {
             const gameState = activeGames.get(roomCode);
             if (!gameState) return;
 
-            const { username, input } = data;
+            const { username, input, tile } = data;
             const player = gameState.players[username];
             if (!player || player.isDead) return;
 
@@ -153,9 +153,13 @@ function setupGameWebSocket(io, authSession) {
             }
 
             // Handle special inputs (Spacebar and G)
-            if (input === "Spacebar") {
+            if (input === " ") {
                 console.log(`${username} pressed Spacebar`);
-                placeBomb(roomCode, { username }, gameState, io);
+                placeBomb(roomCode,
+                    { username, tile, timeToExplode: Date.now() + 3000 },
+                    gameState,
+                    io
+                )
             } else if (input === "G") {
                 console.log(`${username} pressed G`);
                 // Add logic for G action (e.g., special ability)
@@ -212,7 +216,7 @@ function startGameForRoom(roomCode, players, wss) {
             return;
         }
 
-        updateBombManager(roomCode, gameState, wss);
+        popBomb(roomCode, gameState, wss);
         broadcastTilemapUpdate(roomCode, gameState, wss);
         broadcastPlayerUpdate(roomCode, gameState, wss);
         broadcastItemUpdate(roomCode, gameState, wss);
