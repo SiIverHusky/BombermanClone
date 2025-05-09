@@ -1,91 +1,85 @@
-const { gameState, handlePlayerMove, handlePlaceBomb } = require('./gameLogic');
+const TILE_SIZE = 16;
 
 // Function to add a new player
-function addPlayer(playerId) {
-    // Determine starting position based on the number of players already connected
-    const playerCount = Object.keys(gameState.players).length;
+function addPlayer(playerStates, player) {
     const startPositions = [
         { row: 0, col: 0 },
         { row: 10, col: 12 }
     ];
+    const startPosition = startPositions[Object.keys(playerStates).length % 2];
 
-    // Assign the first player to (0,0) and the second to (10,12)
-    const startPosition = startPositions[playerCount % 2];
-
-    // Convert tile coordinates to pixel coordinates
-    const startPixel = {
-        x: startPosition.col * TILE_SIZE,
-        y: startPosition.row * TILE_SIZE
-    };
-
-    // Initialize the player's state
-    gameState.players[playerId] = {
-        id: playerId,
-        x: startPixel.x,
-        y: startPixel.y,
-        width: 16 * 4, // Scaled width
-        height: 24 * 4, // Scaled height
-        speed: 0.5 * 4, // Scaled speed
-        color: getRandomColor(),
+    playerStates[player.id] = {
+        id: player.id,
+        x: startPosition.col * TILE_SIZE * 4,
+        y: startPosition.row * TILE_SIZE * 4,
+        width: TILE_SIZE * 4,
+        height: TILE_SIZE * 6,
+        speed: 0.5 * 4,
+        color: Object.keys(playerStates).length === 0 ? "red" : "blue",
         isDead: false,
         maxBombs: 3,
         bombRange: 3,
         coins: 0,
-        collision: { row: startPosition.row, col: startPosition.col } // Initial collision tile
+        collision: { row: startPosition.row, col: startPosition.col }
     };
-
-    console.log(`Player ${playerId} added at (${startPosition.row}, ${startPosition.col}).`);
 }
 
 // Function to remove a player
-function removePlayer(playerId) {
-    if (gameState.players[playerId]) {
-        delete gameState.players[playerId];
-        console.log(`Player ${playerId} removed.`);
+function removePlayer(playerStates, playerId) {
+    delete playerStates[playerId];
+}
+
+// Function to process player movement
+function processPlayerMove(state, playerId, newX, newY) {
+    const player = state.players[playerId];
+    if (!player) return;
+
+    const { row, col } = pixelToTile(newX + player.width / 2, newY + player.height);
+
+    if (isTileWalkable(state.tilemap, row, col)) {
+        player.x = newX;
+        player.y = newY;
+        player.collision = { row, col };
     }
 }
 
-// Function to handle player movement
-function processPlayerMove(playerId, newX, newY) {
-    if (!gameState.players[playerId]) return;
+// Function to process bomb placement
+function processPlaceBomb(state, playerId) {
+    const player = state.players[playerId];
+    if (!player || player.maxBombs <= 0) return;
 
-    // Delegate movement validation to gameLogic.js
-    handlePlayerMove(playerId, newX, newY);
+    const { row, col } = player.collision;
+
+    if (state.tilemap[row][col] === TILE_EMPTY) {
+        state.tilemap[row][col] = TILE_BOMB;
+        state.bombs.push({
+            row,
+            col,
+            timer: Date.now() + 3000,
+            range: player.bombRange
+        });
+
+        player.maxBombs--;
+    }
 }
 
-// Function to handle bomb placement by a player
-function processPlaceBomb(playerId) {
-    if (!gameState.players[playerId]) return;
-
-    // Delegate bomb placement to gameLogic.js
-    handlePlaceBomb(playerId);
+// Utility function to convert pixel coordinates to tile coordinates
+function pixelToTile(x, y) {
+    return {
+        row: Math.floor(y / TILE_SIZE),
+        col: Math.floor(x / TILE_SIZE)
+    };
 }
 
-// Function to broadcast the updated player state to all clients
-function broadcastPlayerState(wsServer) {
-    const players = gameState.players;
-
-    wsServer.clients.forEach(client => {
-        if (client.readyState === 1) { // WebSocket.OPEN
-            client.send(JSON.stringify({
-                type: 'updatePlayers',
-                players
-            }));
-        }
-    });
+// Function to check if a tile is walkable
+function isTileWalkable(tilemap, row, col) {
+    const tile = tilemap[row][col];
+    return tile === TILE_EMPTY;
 }
 
-// Utility function to generate a random color for players
-function getRandomColor() {
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-    return colors[Math.floor(Math.random() * colors.length)];
-}
-
-// Export functions for use in server.js
 module.exports = {
     addPlayer,
     removePlayer,
     processPlayerMove,
-    processPlaceBomb,
-    broadcastPlayerState
+    processPlaceBomb
 };
