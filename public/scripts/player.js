@@ -295,10 +295,72 @@ function updatePlayer() {
     checkPlayerHit(); // Check if the player is hit by an explosion
 }
 
-function drawPlayer() {
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+function spritePlayer(color, animationState = "stillDown", frameIndex = 0) {
+    const spritesheet = new Image();
+    spritesheet.src = "images/Sprites/player.png";
 
+    const colorSheet = {
+        "white": { x: 2, y: 46 },
+        "black": { x: 195, y: 46 },
+        "red": { x: 2, y: 304 },
+        "blue": { x: 195, y: 304 },
+    };
+
+    const animationSheet = {
+        "stillDown": { x: 18, y: 1, frame: 1 },
+        "stillRight": { x: 18, y: 26, frame: 1 },
+        "stillUp": { x: 18, y: 51, frame: 1 },
+        "stillLeft": { x: 18, y: 76, frame: 1 },
+        "walkDown": { x: 1, y: 1, frame: 3 },
+        "walkRight": { x: 1, y: 26, frame: 3 },
+        "walkUp": { x: 1, y: 51, frame: 3 },
+        "walkLeft": { x: 1, y: 76, frame: 3 },
+        "death": { x: 1, y: 114, frame: 7 },
+    };
+
+    // Get the origin for the player's color
+    const colorOffset = colorSheet[color];
+    if (!colorOffset) {
+        console.error(`Invalid color: ${color}`);
+        return;
+    }
+
+    // Get the animation details
+    const animation = animationSheet[animationState];
+    if (!animation) {
+        console.error(`Invalid animation state: ${animationState}`);
+        return;
+    }
+
+    // Calculate the frame position
+    const frameX = colorOffset.x + animation.x + frameIndex * (player.width + 1); // Add 1 for the gap
+    const frameY = colorOffset.y + animation.y;
+
+    // Draw the sprite
+    ctx.drawImage(
+        spritesheet,
+        frameX, frameY, // Source X, Y
+        player.width, player.height, // Source width, height
+        player.x, player.y, // Destination X, Y
+        player.width, player.height // Destination width, height
+    );
+}
+
+function drawPlayer() {
+    // Determine the animation state based on player movement
+    let animationState = "stillDown";
+    if (keys['w']) animationState = "walkUp";
+    else if (keys['s']) animationState = "walkDown";
+    else if (keys['a']) animationState = "walkLeft";
+    else if (keys['d']) animationState = "walkRight";
+
+    // Update the frame index for animations
+    const frameIndex = Math.floor(Date.now() / 200) % 3; // Cycle through frames every 200ms
+
+    // Draw the player sprite
+    spritePlayer(player.color, animationState, frameIndex);
+
+    // Draw bombs and explosions
     drawBombs();
     drawExplosions();
 }
