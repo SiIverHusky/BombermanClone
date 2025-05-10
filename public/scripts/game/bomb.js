@@ -2,17 +2,27 @@ bombs = [];
 explosions = [];
 
 function placeBomb(player, tilemap) {
-	playSound("place-bomb");
+	console.log(player)
 	const { row, col } = player.tilePos;
+	console.log("Attempting to place bomb placed at: ", row, col);
 	if (tilemap[row][col] === TILE_EMPTY && player.bombCount > 0) {
+		playSound("place-bomb");
 		tilemap[row][col] = TILE_BOMB; // Place a bomb on the tile
 		pushPlayerOffBomb(player, tilemap); // Push player off the bomb
-		player.bombCount--;
+		player.bombCount -= 1;
+		console.log(player)
+		console.log("Player bomb count: ", player.bombCount);
+		console.log("Player remaining bomb count: ", player.bombCount);
 		bombs.push({ row: row, col: col, timeToExplode: Date.now() + 3000, username: player.username, range: player.bombRange});
 		console.log("Bombs: ", bombs)
 		sendBombsUpdate(bombs);
+		sendPlayerUpdate(player);
 		sendTilemapUpdate(tilemap);
 		return true; // Bomb placed successfully
+	} else if (tilemap[row][col] !== TILE_EMPTY) {
+		console.log("Bomb placement failed: Tile is not empty");
+	} else {
+		console.log("Bomb placement failed: Player has no bombs left.");
 	}
 	return false; // Bomb placement failed
 }
@@ -66,9 +76,15 @@ function updateBombs() {
 			bombs.splice(index, 1); // Remove the bomb after explosion
 			sendBombsUpdate(bombs);
 			if (bomb.username === player1.username) {
-				player1.bombCount++;
+				player1.bombCount += 1;
+				console.log("Player 1 bomb count: ", player1.bombCount);
+				console.log(player1)
+				sendPlayerUpdate(player1); // Send the updated player state to the server
 			} else {
-				player2.bombCount++;
+				player2.bombCount += 1;
+				console.log("Player 2 bomb count: ", player2.bombCount);
+				console.log(player2)
+				sendPlayerUpdate(player2); // Send the updated player state to the server
 			}
 		}
 	});

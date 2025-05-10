@@ -79,7 +79,9 @@ function sendPlayerUpdate(player) {
         keys: player.keys,
         latestKey: player.latestKey,
         alive: player.alive,
-        coins: player.coins
+        coins: player.coins,
+        bombCount: player.bombCount,
+        bombRange: player.bombRange
     });
 }
 
@@ -141,8 +143,12 @@ function initializeGame(data) {
 	const playersArray = Object.values(data.players);
     player1 = playersArray.find(player => player.color === "red");
     player1.color = "red";
+    player1.bombRange = 1;
+    player1.bombCount = 1;
     player2 = playersArray.find(player => player.color === "blue");
     player2.color = "blue";
+    player2.bombRange = 1;
+    player2.bombCount = 1;
 
 	player1.position = tileToPixel(player1.tilePos.row, player1.tilePos.col, true)
 	player2.position = tileToPixel(player2.tilePos.row, player2.tilePos.col, true);
