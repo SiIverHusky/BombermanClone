@@ -166,7 +166,7 @@ function updateBombs() {
 
     // Remove expired explosions
     explosions.forEach((explosion, index) => {
-        if (now >= explosion.expiresAt) {
+        if (now >= explosion.expiresAt) {   
             explosions.splice(index, 1); // Remove the explosion
         }
     });

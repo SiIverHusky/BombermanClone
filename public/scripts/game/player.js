@@ -1,3 +1,11 @@
+// Map to track the last pressed keys
+const lastKeys = {
+    w: false,
+    a: false,
+    s: true,
+    d: false
+};
+
 // Player 1 and Player 2 objects
 const player1 = {
     username: null,
@@ -76,10 +84,10 @@ function movePlayer(player) {
     let newX = player.x;
     let newY = player.y;
 
-    if (keys['w']) newY -= player.speed;
-    if (keys['s']) newY += player.speed;
-    if (keys['a']) newX -= player.speed;
-    if (keys['d']) newX += player.speed;
+    if (keyState['w']) newY -= player.speed;
+    if (keyState['s']) newY += player.speed;
+    if (keyState['a']) newX -= player.speed;
+    if (keyState['d']) newX += player.speed;
 
     // Convert new positions to tile coordinates
     const newTileX = pixelToTile(newX + player.width / 2, player.y + player.height).col;
@@ -125,11 +133,7 @@ function drawPlayer(player) {
     ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
-// Function to render both players
-function drawPlayers() {
-    drawPlayerWithAnimation(player1);
-    drawPlayerWithAnimation(player2);
-}
+
 
 // Bombs and explosions will now be managed by the server
 const bombs = [];
@@ -267,7 +271,7 @@ function drawExplosions() {
 }
 
 // Sprites
-function spritePlayer(color, animationState = "stillDown", frameIndex = 0) {
+function spritePlayer(player, animationState = "stillDown", frameIndex = 0) {
     const spritesheet = new Image();
     spritesheet.src = "images/Sprites/player4.png";
 
@@ -293,7 +297,7 @@ function spritePlayer(color, animationState = "stillDown", frameIndex = 0) {
     };
 
     // Get the origin for the player's color
-    const colorOffset = colorSheet[color];
+    const colorOffset = colorSheet[player.color];
     if (!colorOffset) {
         console.error(`Invalid color: ${color}`);
         return;
@@ -323,7 +327,10 @@ function spritePlayer(color, animationState = "stillDown", frameIndex = 0) {
     );
 }
 
-function drawPlayerWithAnimation(player) {
+function drawPlayerWithAnimation(player, keys = {}) {
+    // Ensure keys is defined to avoid TypeError
+    keys = keys || {};
+
     // Determine the animation state based on player movement
     let animationState = "stillDown";
     if (keys['w']){
@@ -358,5 +365,5 @@ function drawPlayerWithAnimation(player) {
     const frameIndex = Math.floor(Date.now() / 200) % 3; // Cycle through frames every 200ms
 
     // Draw the player sprite
-    spritePlayer(player.color, animationState, frameIndex);
+    spritePlayer(player, animationState, frameIndex);
 }

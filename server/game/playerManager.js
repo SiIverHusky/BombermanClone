@@ -1,10 +1,10 @@
 const TILE_SIZE = 16;
 
 // Function to add a new player
-function addPlayer(playerStates, username) {
+function addPlayer(playerStates, username, roomCode) {
     const startPositions = [
-        { row: 0, col: 0, offsetY: -10, color: "red" },
-        { row: 10, col: 12, offsetY: -10, color: "blue" }
+        { row: 0, col: 0, color: "red" },
+        { row: 10, col: 12, color: "blue" }
     ];
 
     const existingPlayers = Object.keys(playerStates).length;
@@ -15,15 +15,11 @@ function addPlayer(playerStates, username) {
 
     const startPosition = startPositions[existingPlayers];
 
-    // Convert tile coordinates to pixel coordinates
-    const x = startPosition.col * TILE_SIZE;
-    const y = startPosition.row * TILE_SIZE + startPosition.offsetY;
-
     // Add the player to the playerStates object
     playerStates[username] = {
         username: username,
-        x: x,
-        y: y,
+        row: startPosition.row,
+        col: startPosition.col,
         color: startPosition.color,
         isDead: false,
         maxBombs: 3,
@@ -31,7 +27,8 @@ function addPlayer(playerStates, username) {
         coins: 0
     };
 
-    console.log(`Player ${username} added at (${x}, ${y})`);
+
+    console.log(`Player ${username} added at tile (${startPosition.row}, ${startPosition.col})`);
 }
 
 // Function to remove a player

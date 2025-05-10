@@ -1,0 +1,65 @@
+const TILE_SIZE = 16 * scale; // Size of each tile in pixels
+const TILE_ROWS = 11; // Number of rows in the arena
+const TILE_COLS = 13; // Number of columns in the arena
+
+// Tile types
+const TILE_EMPTY = 0;
+const TILE_BLOCK = 1; // Indestructible blocks
+const TILE_BRICK = 2; // Destructible bricks
+const TILE_PICKUP = 3; // Items (e.g., coins, power-ups)
+const TILE_BOMB = 4; // Bombs
+
+function updateTilemap(serverTilemap) {
+	tilemap = serverTilemap; // Replace the local tilemap with the server's tilemap
+	// console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
+}
+
+function isTileWalkable(row, col) {
+	return tilemap[row] && (tilemap[row][col] === TILE_EMPTY || tilemap[row][col] === TILE_PICKUP);
+}
+
+function drawTilemap() {
+	for (let row = 0; row < TILE_ROWS; row++) {
+		for (let col = 0; col < TILE_COLS; col++) {
+			const tileType = tilemap[row][col];
+			const { x, y } = tileToPixel(row, col);
+
+			if (tileType === TILE_BLOCK) {
+				// Draw indestructible blocks
+				ctx.fillStyle = "gray";
+				ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+			} else if (tileType === TILE_BRICK) {
+				// Draw destructible bricks
+				ctx.fillStyle = "brown";
+				ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+			} 
+			else if (tileType === TILE_PICKUP) {
+			    drawItem(row, col);
+			} else if (tileType === TILE_BOMB) {
+			    drawBomb(row, col);
+			}
+		}
+	}
+}
+
+// Convert tile coordinates to pixel coordinates
+function tileToPixel(row, col, middle = false) {
+    if (middle) {
+		return {
+			x: arenaX + col * TILE_SIZE + TILE_SIZE / 2,
+			y: arenaY + row * TILE_SIZE + TILE_SIZE / 2
+		};
+	}
+	return {
+        x: arenaX + col * TILE_SIZE,
+        y: arenaY + row * TILE_SIZE
+    };
+}
+
+// Convert pixel coordinates to tile coordinates
+function pixelToTile(x, y) {
+    return {
+        row: Math.floor((y - arenaY) / TILE_SIZE),
+        col: Math.floor((x - arenaX) / TILE_SIZE)
+    };
+}

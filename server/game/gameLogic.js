@@ -65,7 +65,7 @@ function initializeTilemap() {
 }
 
 // Function to initialize the game state for a room
-function initializeGameState(roomCode, players) {
+function initializeGameState(roomCode, players, io) {
     console.log(`Initializing game state for room ${roomCode}...`);
 
     const tilemap = initializeTilemap();
@@ -74,7 +74,7 @@ function initializeGameState(roomCode, players) {
     const playerStates = {};
     players.forEach(player => {
         const username = player.username;
-        addPlayer(playerStates, player, username); // Use username as the key
+        addPlayer(playerStates, username, roomCode); // Use username as the key and emit signal
     });
 
     console.log("Player states initialized:", playerStates);

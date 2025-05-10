@@ -95,13 +95,19 @@ window.addEventListener("keyup", (event) => {
 // Initializing function
 function initializeGame(data) {
     console.log("Initializing game with data:", data);
-    player1.username = data.players.player1.username;
-    player1.x = data.players.player1.x * scale + arenaX;
-    player1.y = data.players.player1.y * scale + arenaY;
 
+    player1.username = data.players.player1.username;
+    row = data.players.player1.row;
+    col = data.players.player1.col;
+    player1.x = tileToPixel(row, col).x + arenaX ;
+    player1.y = tileToPixel(row, col).y + arenaY;
+    
     player2.username = data.players.player2.username;
-    player2.x = data.players.player2.x * scale + arenaX;
-    player2.y = data.players.player2.y * scale + arenaY;
+    row = data.players.player2.row;
+    col = data.players.player2.col;
+    player2.x = tileToPixel(row, col).x + arenaX - player2.width / 4;
+    player2.y = tileToPixel(row, col).y + arenaY - player2.height / 4;
+
 
     updateTilemap(data.tilemap); // Initialize the tilemap
     updateItems(data.items); // Initialize items
@@ -207,4 +213,15 @@ function popBomb() {
     }));
 
     console.log("Requested to remove the earliest placed bomb.");
+}
+
+// Function to render both players
+function drawPlayers() {
+    if (username === player1.username) {
+        drawPlayerWithAnimation(player1, keyState);
+        drawPlayerWithAnimation(player2);
+    } else {
+        drawPlayerWithAnimation(player2, keyState);
+        drawPlayerWithAnimation(player1);
+    }
 }
