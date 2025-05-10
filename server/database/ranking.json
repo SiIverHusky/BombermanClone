@@ -3,18 +3,24 @@
     "username": "a",
     "wins": 0,
     "losses": 0,
-    "draws": 24
+    "draws": 27
   },
   {
     "username": "s",
     "wins": 0,
     "losses": 1,
-    "draws": 24
+    "draws": 26
   },
   {
     "username": "Won",
     "wins": 100,
     "losses": 0,
     "draws": 15
+  },
+  {
+    "username": "b",
+    "wins": 0,
+    "losses": 1,
+    "draws": 1
   }
 ]

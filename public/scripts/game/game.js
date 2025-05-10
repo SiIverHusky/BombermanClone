@@ -116,6 +116,11 @@ ws.on("updateItems", (data) => {
     // console.log("Items updated:", items);
 });
 
+ws.on("gameOver", (data)=>{
+    alert(data.message);
+    window.location.href = `waiting.html?roomCode=${encodeURIComponent(roomCode)}&username=${encodeURIComponent(username)}`;
+})
+
 function sendItemsUpdate(items) {
     ws.emit("updateItems", { items }, (response) => {
         if (response.success) {

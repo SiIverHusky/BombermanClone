@@ -1,5 +1,6 @@
 const {rooms} = require('../room.js');
 const {initializeGameState} = require('./gameInitialize.js');
+const { updateGameLog, updateRanking } = require('./gameOver.js');
 
 const GAME_DURATION = 3*60*1000; // 3 minutes
 const activeGames = new Map(); // Store active games by room code
@@ -223,7 +224,8 @@ function checkEndGame(roomCode, gameState, io) {
 
 	if (alivePlayers.length <= 1) {
 		gameState.gameEnded = true;
-		io.to(roomCode).emit('gameOver', { winner: alivePlayers[0] });
+		//io.to(roomCode).emit('gameOver', { winner: alivePlayers[0] });
+		endGame(roomCode, gameState, alivePlayers[0], "Game Over!",io );
 	}
 
 	const elapsedTime = Date.now() - gameState.gameStartTime;
@@ -232,17 +234,32 @@ function checkEndGame(roomCode, gameState, io) {
 		const maxCoins = Math.max(...players.map(player => player.coins));
 		let playerWithMaxCoins = players.filter(player => player.coins === maxCoins);
 		if (playerWithMaxCoins.length === 1) {
-			io.to(roomCode).emit('gameOver', { winner: playerWithMaxCoins[0] });
+			//io.to(roomCode).emit('gameOver', { winner: playerWithMaxCoins[0] });
+			endGame(roomCode, gameState, playerWithMaxCoins[0], "Game Over!",io );
 		} else {
-			io.to(roomCode).emit('gameOver', { winner: null });
+			//io.to(roomCode).emit('gameOver', { winner: null });
+			endGame(roomCode, gameState, null, "Game Over!",io ); // Coins are equal, draw.
 		}
 	}
 }
-function endGame(roomCode, gameState, message, io) {
-	gameState.gameEnded = true;
-	io.to(roomCode).emit('gameOver', { message });
-	activeGames.delete(roomCode);
-	console.log(`Game ended for room ${roomCode}`);
+
+function endGame(roomCode, gameState, winner, message, io) {
+    gameState.gameEnded = true;
+
+    io.to(roomCode).emit('gameOver', { message });
+    const room = rooms.get(roomCode);
+    if (room) {
+        room.status = "gameover";
+        const players = []
+        room.players.forEach(playerInRoom => {
+            const player = gameState.players[playerInRoom.username];
+            players.push(player)
+        })
+        
+        updateGameLog(roomCode, players, winner);
+        updateRanking(roomCode, players, winner);
+    }
+    console.log(`Game for room ${roomCode} ended: ${message}`);
 }
 
 module.exports = {
