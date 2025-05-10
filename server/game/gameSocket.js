@@ -87,7 +87,11 @@ function setupGameWebSocket(io, authSession) {
 
 		// TODO:Game related events
 		socket.on("updatePlayer", (data, callback) => {
-			const player = room.players.find(player => player.username === session.user.username);
+			
+			if (!activeGames.has(roomCode)) { return; }
+			const player = activeGames.get(roomCode).players[data.username];
+			
+			
 			if (player) {
 				Object.assign(player, {
 					position: data.position,
@@ -184,13 +188,7 @@ function startGameForRoom(roomCode, players, io) {
 	});
 
 	const gameInterval = setInterval(() => {
-		if (gameState.gameEnded) {
-			clearInterval(gameInterval);
-			activeGames.delete(roomCode);
-			console.log(`Game ended for room ${roomCode}`);
-			
-			return;
-		}
+		
 
 		// TODO: Game logic updates
 		broadcastTilemapUpdate(roomCode, gameState, io);
@@ -199,6 +197,15 @@ function startGameForRoom(roomCode, players, io) {
 		broadcastBombUpdate(roomCode, gameState, io); // Won: Don't need this function here
 		broadcastTimerUpdate(roomCode, GAME_DURATION - (Date.now() - gameState.gameStartTime), io);
 		checkEndGame(roomCode, gameState, io);
+
+		if (gameState.gameEnded) {
+			clearInterval(gameInterval);
+			activeGames.delete(roomCode); /////////////////////////
+			console.log(`Game ended for room ${roomCode}`);
+			
+			return;
+		}
+
 	}, 100);
 }
 

@@ -23,6 +23,7 @@ const ITEM_SIZES = {
 let items = [];
 
 function collectItem(player, item) {
+	playSound("get-item");	
 	switch (item.type) {
 		case ITEM_TYPES.INCREASE_BOMB_RANGE:
 			player.bombRange += 1;

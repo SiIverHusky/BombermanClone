@@ -2,6 +2,7 @@ bombs = [];
 explosions = [];
 
 function placeBomb(player, tilemap) {
+	playSound("place-bomb");
 	const { row, col } = player.tilePos;
 	if (tilemap[row][col] === TILE_EMPTY && player.bombCount > 0) {
 		tilemap[row][col] = TILE_BOMB; // Place a bomb on the tile
@@ -143,6 +144,7 @@ function hitPlayersDetection() {
 }
 
 function explodeBomb(bomb) {
+	playSound("bomb-explodes");
 	const { row, col } = bomb;
 	tilemap[row][col] = TILE_EMPTY; // Remove the bomb from the tile
 	sendTilemapUpdate(tilemap); // Send the updated tilemap to the server

@@ -60,11 +60,13 @@ $(document).ready(function () {
 socket.on("lastGame", (data) => {
     const $gameResult = $("#game-result");
     const $coins = $("#coins");
-
+    
     if (data.data) {
         // 게임 결과 표시
+        //console.log(data.data);
         if (data.data.winner !== null) {
-            $gameResult.text(`${data.data.winner} Win!`);
+            //console.log("Winner" , data.data.winner);
+            $gameResult.text(`${data.data.winner.username} Wins!`);
         } else {
             $gameResult.text("It's a draw!");
         }

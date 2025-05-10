@@ -182,5 +182,1016 @@
       }
     ],
     "timestamp": "2025-05-10T11:53:36.426Z"
+  },
+  {
+    "roomCode": "HVK5XQ",
+    "winner": null,
+    "players": [
+      {
+        "username": "s",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T12:43:40.645Z"
+  },
+  {
+    "roomCode": "D26JYU",
+    "winner": null,
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T12:50:23.954Z"
+  },
+  {
+    "roomCode": "1US6LN",
+    "winner": null,
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T12:55:35.592Z"
+  },
+  {
+    "roomCode": "N8FVGR",
+    "winner": {
+      "username": "s",
+      "position": {
+        "x": 669.5,
+        "y": 716.5294372515227
+      },
+      "tilePos": {
+        "row": 10,
+        "col": 10
+      },
+      "color": "blue",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 257.8822509939091,
+          "y": 265.46089475659875
+        },
+        "tilePos": {
+          "row": 4,
+          "col": 5
+        },
+        "color": "red",
+        "keys": [],
+        "alive": false,
+        "coins": 10,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 669.5,
+          "y": 716.5294372515227
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 10
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T12:58:13.930Z"
+  },
+  {
+    "roomCode": "PSAGP2",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 793.5,
+          "y": 651.5
+        },
+        "tilePos": {
+          "row": 9,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:00:59.191Z"
+  },
+  {
+    "roomCode": "5PF2P3",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 598.4142135623731,
+          "y": 653.4142135623731
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 9
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:14:00.373Z"
+  },
+  {
+    "roomCode": "5PF2P3",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 741,
+          "y": 620
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 11
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:14:14.878Z"
+  },
+  {
+    "roomCode": "OKPV22",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 653,
+          "y": 535.5
+        },
+        "tilePos": {
+          "row": 9,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:15:45.894Z"
+  },
+  {
+    "roomCode": "OKPV22",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 667,
+          "y": 539.5
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 12
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:16:10.899Z"
+  },
+  {
+    "roomCode": "39CSS0",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 677,
+          "y": 652
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 10
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:17:37.212Z"
+  },
+  {
+    "roomCode": "UCHX0I",
+    "winner": {
+      "username": "s",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "s",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "a",
+        "position": {
+          "x": 569,
+          "y": 633.5
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 10
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:19:02.869Z"
+  },
+  {
+    "roomCode": "UCHX0I",
+    "winner": {
+      "username": "s",
+      "position": {
+        "x": -21,
+        "y": -20
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "s",
+        "position": {
+          "x": -21,
+          "y": -20
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "a",
+        "position": {
+          "x": 618.4142135623731,
+          "y": 634.9142135623731
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 11
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:19:31.692Z"
+  },
+  {
+    "roomCode": "5HJGKT",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 741,
+          "y": 622
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 11
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:20:46.425Z"
+  },
+  {
+    "roomCode": "5HJGKT",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "tilePos": {
+        "row": 0,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "bombRange": 1,
+      "bombCount": 1,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 598.4142135623731,
+          "y": 521.9583694396572
+        },
+        "tilePos": {
+          "row": 8,
+          "col": 9
+        },
+        "color": "blue",
+        "keys": [],
+        "alive": false,
+        "coins": 10,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:23:40.317Z"
+  },
+  {
+    "roomCode": "5HJGKT",
+    "winner": {
+      "username": "s",
+      "position": {
+        "x": 708.3137084989849,
+        "y": 518.6862915010151
+      },
+      "tilePos": {
+        "row": 8,
+        "col": 11
+      },
+      "color": "blue",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 5,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "tilePos": {
+          "row": 0,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "bombRange": 1,
+        "bombCount": 1,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 708.3137084989849,
+          "y": 518.6862915010151
+        },
+        "tilePos": {
+          "row": 8,
+          "col": 11
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 5,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:26:56.421Z"
+  },
+  {
+    "roomCode": "D1FUDO",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": 304.27207793864216,
+        "y": 126.46803743153566
+      },
+      "tilePos": {
+        "row": 2,
+        "col": 5
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 2,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": 304.27207793864216,
+          "y": 126.46803743153566
+        },
+        "tilePos": {
+          "row": 2,
+          "col": 5
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 2,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 645,
+          "y": 633.5
+        },
+        "tilePos": {
+          "row": 10,
+          "col": 10
+        },
+        "color": "blue",
+        "keys": [
+          "d"
+        ],
+        "alive": false,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:41:20.368Z"
+  },
+  {
+    "roomCode": "D1FUDO",
+    "winner": {
+      "username": "a",
+      "position": {
+        "x": -24.71572875253848,
+        "y": 72.31875913286812
+      },
+      "tilePos": {
+        "row": 1,
+        "col": 0
+      },
+      "color": "red",
+      "keys": [],
+      "latestKey": null,
+      "alive": true,
+      "coins": 0,
+      "width": 64,
+      "height": 96
+    },
+    "players": [
+      {
+        "username": "a",
+        "position": {
+          "x": -24.71572875253848,
+          "y": 72.31875913286812
+        },
+        "tilePos": {
+          "row": 1,
+          "col": 0
+        },
+        "color": "red",
+        "keys": [],
+        "latestKey": null,
+        "alive": true,
+        "coins": 0,
+        "width": 64,
+        "height": 96
+      },
+      {
+        "username": "s",
+        "position": {
+          "x": 730.3847763108504,
+          "y": 456.77207793864204
+        },
+        "tilePos": {
+          "row": 6,
+          "col": 10
+        },
+        "color": "blue",
+        "keys": [],
+        "latestKey": null,
+        "alive": false,
+        "coins": 11,
+        "width": 64,
+        "height": 96
+      }
+    ],
+    "timestamp": "2025-05-10T13:42:16.760Z"
   }
 ]

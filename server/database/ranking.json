@@ -1,15 +1,15 @@
 [
   {
     "username": "a",
-    "wins": 0,
-    "losses": 0,
-    "draws": 27
+    "wins": 4,
+    "losses": 10,
+    "draws": 30
   },
   {
     "username": "s",
-    "wins": 0,
-    "losses": 1,
-    "draws": 26
+    "wins": 1,
+    "losses": 14,
+    "draws": 29
   },
   {
     "username": "Won",

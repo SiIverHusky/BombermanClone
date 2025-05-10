@@ -22,7 +22,7 @@ function updateRanking(roomCode,players, winner) {
             if (winner === null) {
                 playerData.draws += 1;
             }
-            else if (player.id === winner) {
+            else if (player.username === winner.username) {
                 playerData.wins += 1;
             } 
             else {
