@@ -115,7 +115,6 @@ function sendBombsUpdate(bombs) {
 
 ws.on("updateItems", (data) => {
     items = data.items;
-    // console.log("Items updated:", items);
 });
 
 ws.on("gameOver", (data)=>{
@@ -257,7 +256,7 @@ function gameLoop() {
     checkItemCollection(player2);
 
     updateBombs();
-    // hitPlayersDetection()
+    hitPlayersDetection()
 
     drawBounds();
 	drawFloor();
