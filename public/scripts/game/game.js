@@ -117,7 +117,7 @@ ws.on("updateItems", (data) => {
 });
 
 ws.on("gameOver", (data)=>{
-    alert(data.message);
+    //alert(data.message);
     window.location.href = `waiting.html?roomCode=${encodeURIComponent(roomCode)}&username=${encodeURIComponent(username)}`;
 })
 
