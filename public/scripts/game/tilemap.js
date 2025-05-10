@@ -9,49 +9,48 @@ const TILE_BRICK = 2; // Destructible bricks
 const TILE_PICKUP = 3; // Items (e.g., coins, power-ups)
 const TILE_BOMB = 4; // Bombs
 
-// Initialize the tilemap (empty by default)
-let tilemap = Array.from({ length: TILE_ROWS }, () => Array(TILE_COLS).fill(TILE_EMPTY));
-
-// Function to update the tilemap based on server data
 function updateTilemap(serverTilemap) {
-    tilemap = serverTilemap; // Replace the local tilemap with the server's tilemap
-    // console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
+	tilemap = serverTilemap; // Replace the local tilemap with the server's tilemap
+	// console.log("Tilemap updated from server:", tilemap); // Log the updated tilemap for debugging
 }
 
 function isTileWalkable(row, col) {
-    return tilemap[row] && (tilemap[row][col] === TILE_EMPTY || tilemap[row][col] === TILE_PICKUP);
+	return tilemap[row] && (tilemap[row][col] === TILE_EMPTY || tilemap[row][col] === TILE_PICKUP);
 }
 
-// Function to draw the tilemap
 function drawTilemap() {
-    for (let row = 0; row < TILE_ROWS; row++) {
-        for (let col = 0; col < TILE_COLS; col++) {
-            const tileType = tilemap[row][col];
-            const { x, y } = tileToPixel(row, col);
+	for (let row = 0; row < TILE_ROWS; row++) {
+		for (let col = 0; col < TILE_COLS; col++) {
+			const tileType = tilemap[row][col];
+			const { x, y } = tileToPixel(row, col);
 
-            if (tileType === TILE_BLOCK) {
-                // Draw indestructible blocks
-                ctx.fillStyle = "gray";
-                ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-            } else if (tileType === TILE_BRICK) {
-                // Draw destructible bricks
-                ctx.fillStyle = "brown";
-                ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-            } 
-            // else if (tileType === TILE_PICKUP) {
-            //     // Draw items (handled in items.js)
-            //     drawItemAtTile(row, col);
-            // } else if (tileType === TILE_BOMB) {
-            //     // Draw bombs (handled in player.js or bombs.js)
-            //     drawBombAtTile(row, col);
-            // }
-        }
-    }
+			if (tileType === TILE_BLOCK) {
+				// Draw indestructible blocks
+				ctx.fillStyle = "gray";
+				ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+			} else if (tileType === TILE_BRICK) {
+				// Draw destructible bricks
+				ctx.fillStyle = "brown";
+				ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+			} 
+			// else if (tileType === TILE_PICKUP) {
+			//     drawItem(row, col);
+			// } else if (tileType === TILE_BOMB) {
+			//     drawBomb(row, col);
+			// }
+		}
+	}
 }
 
 // Convert tile coordinates to pixel coordinates
-function tileToPixel(row, col) {
-    return {
+function tileToPixel(row, col, middle = false) {
+    if (middle) {
+		return {
+			x: arenaX + col * TILE_SIZE + TILE_SIZE / 2,
+			y: arenaY + row * TILE_SIZE + TILE_SIZE / 2
+		};
+	}
+	return {
         x: arenaX + col * TILE_SIZE,
         y: arenaY + row * TILE_SIZE
     };

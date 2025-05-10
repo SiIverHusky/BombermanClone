@@ -8,8 +8,6 @@ function placeBomb(player, tilemap) {
 		pushPlayerOffBomb(player, tilemap); // Push player off the bomb
 		player.bombCount--;
 		bombs.push({ row, col, timeToExplode: Date.now() + 3000, username: player.username, range: player.maxRange});
-		sendBombsUpdate(bombs)
-		console.log("Sending bomb info to server")
 		return true; // Bomb placed successfully
 	}
 	return false; // Bomb placement failed

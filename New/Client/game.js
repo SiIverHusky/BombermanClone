@@ -194,6 +194,10 @@ function gameLoop() {
 	checkItemCollection(player1);
     checkItemCollection(player2);
 
+	drawBounds();
+	drawFloor();
+	drawGrid();
+
 	drawTilemap();
 	drawItems();
 	drawAllPlayers();

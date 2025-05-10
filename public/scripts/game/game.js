@@ -1,227 +1,253 @@
-// Extract username from the URL query
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get("username");
-
-// Extract roomCode from the URL query
 const roomCode = urlParams.get("roomCode");
 
+window.addEventListener("keydown", inputHandler);
+window.addEventListener("keyup", inputHandler);
 
+let player1 = {
+	username: null,
+	position: { x: 0, y: 0 },
+	tilePos: { row: 0, col: 0 },
+	color: null,
+	keys: [],
+	alive: false,
+	coins: 0,
+	maxRange: 1,
+	bombCount: 1,
+	width: 16 * scale,
+	height: 24 * scale
+}
 
+let player2 = {
+	username: null,
+	position: { x: 0, y: 0 },
+	tilePos: { row: 0, col: 0 },
+	color: null,
+	keys: [],
+	alive: false,
+	coins: 0,
+	maxRange: 1,
+	bombCount: 1,
+    width: 16 * scale,
+	height: 24 * scale
+}
+
+// WebSocket connection
 const ws = io("/game", { query: { roomCode } });
 
-
-// WebSocket 연결 성공
 ws.on("connect", () => {
-    console.log("Connected to the server!");
-    ws.emit("playerReady", { roomCode }); // Notify the server that the player is ready
+	console.log("Connected to the server!");
+	ws.emit("playerReady", { roomCode }); // Notify the server that the player is ready
 });
 
-// WebSocket 에러
-ws.on("error", (error) => {
-    console.error("WebSocket error:", error);
-});
-
-// WebSocket 연결 종료
-ws.on("disconnect", () => {
-    console.log("Disconnected from the server.");
-});
-
-// 서버로부터 수신된 이벤트 처리
 ws.on("initialize", (data) => {
     initializeGame(data);
-    gameLoop(); // Start the game loop
+})
+
+ws.on("error", (error) => {
+	console.error("WebSocket error:", error);
 });
+
+ws.on("disconnect", () => {
+	console.log("Disconnected from the server.");
+});
+
+ws.on("updatePlayer", (data) => {
+    const player = data.username === player1.username ? player1 : player2;
+    player.position = data.position;
+    player.tilePos = data.tilePos;
+    player.keys = data.keys;
+    player.latestKey = data.latestKey;
+    player.alive = data.alive;
+    player.coins = data.coins;
+});
+
+function sendPlayerUpdate(player) {
+    ws.emit("updatePlayer", {
+        username: player.username,
+        position: player.position,
+        tilePos: player.tilePos,
+        keys: player.keys,
+        latestKey: player.latestKey,
+        alive: player.alive,
+        coins: player.coins
+    });
+}
 
 ws.on("updateTilemap", (data) => {
-    updateTilemap(data.tilemap); // Update the local tilemap with server data
+    tilemap = data.tilemap;
+    // console.log("Tilemap updated:", tilemap);
 });
 
-ws.on("updatePlayers", (data) => {
-    updatePlayers(data.players); // Sync players' positions
-});
-
-ws.on("updateItems", (data) => {
-    updateItems(data.items); // Sync items on the map
-});
-
-ws.on("timerUpdate", (data) => {
-    updateTimerDisplay(data.seconds * 1000); // 서버는 초 단위로 보냄
-});
-
-ws.on("gameOver", (data) => {
-    console.log("Game over event received:", data);
-    const redirectUrl = `/waiting.html?roomCode=${roomCode}&username=${username}`;
-    window.location.href = redirectUrl;
-});
+function sendTilemapUpdate(tilemap) {
+    ws.emit("updateTilemap", { tilemap }, (response) => {
+        if (response.success) {
+            console.log("Tilemap update processed successfully:", response.message);
+        } else {
+            console.error("Tilemap update failed:", response.message);
+        }
+    });
+}
 
 ws.on("updateBombs", (data) => {
-    updateBombs(data.bombs); // Update bombs with the server's data
+    bombs = data.bombs;
+    // console.log("Bombs updated:", bombs);
 });
 
-ws.on("updateExplosions", (data) => {
-    explosions.push(...data.explosions); // Add new explosions from the server
-});
-
-// Function to handle input and send to server
-function handleInput(key) {
-    const validKeys = ["W", "A", "S", "D", " ", "G"];
-    if (validKeys.includes(key.toUpperCase())) {
-        console.log("Key pressed:", key.toUpperCase());
-        if (username === player1.username) {
-            ws.emit("playerInput", { input: key.toUpperCase(), username: username, tile: pixelToTile(player1.collisionPoint.x, player1.collisionPoint.y) });
+function sendBombsUpdate(bombs) {
+    ws.emit("updateBombs", { bombs }, (response) => {
+        if (response.success) {
+            // console.log("Bombs update processed successfully:", response.message);
+        } else {
+            console.error("Bombs update failed:", response.message);
         }
-        else {
-            ws.emit("playerInput", { input: key.toUpperCase(), username: username, tile: pixelToTile(player2.collisionPoint.x, player2.collisionPoint.y) });
-        }
-    }
+    });
 }
 
-// Map to track key states
-const keyState = {};
-
-// Event listener for keydown
-window.addEventListener("keydown", (event) => {
-    if (!keyState[event.key]) {
-        keyState[event.key] = true;
-        handleInput(event.key);
-    }
+ws.on("updateItems", (data) => {
+    items = data.items;
+    // console.log("Items updated:", items);
 });
 
-// Event listener for keyup
-window.addEventListener("keyup", (event) => {
-    keyState[event.key] = false;
-});
+function sendItemsUpdate(items) {
+    ws.emit("updateItems", { items }, (response) => {
+        if (response.success) {
+            // console.log("Items update processed successfully:", response.message);
+        } else {
+            console.error("Items update failed:", response.message);
+        }
+    });
+}
 
-// Initializing function
 function initializeGame(data) {
-    console.log("Initializing game with data:", data);
+	console.log("Game initialized with data:", data);
 
-    player1.username = data.players.player1.username;
-    row = data.players.player1.row;
-    col = data.players.player1.col;
-    player1.x = tileToPixel(row, col).x + arenaX ;
-    player1.y = tileToPixel(row, col).y + arenaY;
+	tilemap = data.tilemap;
+	items = data.items;
     
-    player2.username = data.players.player2.username;
-    row = data.players.player2.row;
-    col = data.players.player2.col;
-    player2.x = tileToPixel(row, col).x + arenaX - player2.width / 4;
-    player2.y = tileToPixel(row, col).y + arenaY - player2.height / 4;
+	const playersArray = Object.values(data.players);
+    player1 = playersArray.find(player => player.color === "red");
+    player1.color = "red";
+    player2 = playersArray.find(player => player.color === "blue");
+    player2.color = "blue";
 
+	player1.position = tileToPixel(player1.tilePos.row, player1.tilePos.col, true)
+	player2.position = tileToPixel(player2.tilePos.row, player2.tilePos.col, true);
 
-    updateTilemap(data.tilemap); // Initialize the tilemap
-    updateItems(data.items); // Initialize items
+	gameLoop();
 }
 
-function updatePlayers(serverPlayers) {
-    // Update player1's position if it exists in the server data
-    if (serverPlayers[player1.username]) {
-        player1.x = serverPlayers[player1.username].x * scale + arenaX;
-        player1.y = serverPlayers[player1.username].y * scale + arenaY;
+function inputHandler(event) {
+    const currentPlayer = username === player1.username ? player1 : player2;
+
+    if (!currentPlayer.keys) {
+        currentPlayer.keys = [];
     }
 
-    // Update player2's position if it exists in the server data
-    if (serverPlayers[player2.username]) {
-        player2.x = serverPlayers[player2.username].x * scale + arenaX;
-        player2.y = serverPlayers[player2.username].y * scale + arenaY;
-    }
+    const keyMap = [
+        "w", "a", "s", "d", // WASD
+        " ",                // Space
+        "g"                 // God Key
+    ];
 
-    // Redraw players after updating their positions
-    drawPlayers();
-}
+    if (keyMap.includes(event.key.toLowerCase())) {
+        if (event.type === 'keydown' && !currentPlayer.keys.includes(event.key)) {
+            currentPlayer.keys.push(event.key);
+            if (["w", "a", "s", "d"].includes(event.key.toLowerCase())) {
+                currentPlayer.latestKey = event.key.toLowerCase();
+            } else if (event.key === ' ') {
+                console.log("Space key pressed");
+                placeBomb(currentPlayer, tilemap); // Call placeBomb for Space key
+            }
+			sendPlayerUpdate(currentPlayer);
+        } else if (event.type === 'keyup') {
+            const index = currentPlayer.keys.indexOf(event.key);
+            if (index > -1) {
+                currentPlayer.keys.splice(index, 1);
+            }
 
-// Function to check if a player is hit by an explosion
-function checkPlayerHit(player) {
-    explosions.forEach(explosion => {
-        const { row, col } = player.collisionPoint;
-        if (explosion.row === row && explosion.col === col) {
-            player.isDead = true;
-            player.color = "red";
-            console.log(`${player.username} was hit by an explosion!`);
-
-            // Emit the player hit event to the server
-            ws.emit("playerHit", { playerUsername: player.username });
+            // Update latestKey if the released key was the latest
+            if (currentPlayer.latestKey === event.key.toLowerCase()) {
+                currentPlayer.latestKey = currentPlayer.keys.find(key => ["w", "a", "s", "d"].includes(key)) || null;
+            }
+			sendPlayerUpdate(currentPlayer);
         }
-    });
+    }
 }
 
-// 타이머 디스플레이 업데이트
-function updateTimerDisplay(remainingTime) {
-    const timerElement = document.getElementById("timer");
-    const minutes = Math.floor(remainingTime / 60000);
-    const seconds = Math.floor((remainingTime % 60000) / 1000);
-    timerElement.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+function drawPlayer(player) {
+    // Determine the animation state based on player movement
+    let animationState = "stillDown";
+    if (player.keys.includes("w")) {
+        animationState = "walkUp";
+    } else if (player.keys.includes("s")) {
+        animationState = "walkDown";
+    } else if (player.keys.includes("a")) {
+        animationState = "walkLeft";
+    } else if (player.keys.includes("d")) {
+        animationState = "walkRight";
+    } else {
+        if (player.latestKey === "w") animationState = "stillUp";
+        else if (player.latestKey === "s") animationState = "stillDown";
+        else if (player.latestKey === "a") animationState = "stillLeft";
+        else if (player.latestKey === "d") animationState = "stillRight";
+    }
+
+    // Update the frame index for animations
+    const frameIndex = Math.floor(Date.now() / 200) % 3; // Cycle through frames every 200ms
+
+    // Draw the player sprite
+    spritePlayer(player, animationState, frameIndex);
 }
 
-// 게임 종료 처리
-function handleEndGame(message) {
-    alert(message);
-    window.location.href = "/waiting.html" + `?roomCode=${roomCode}`;
+
+function drawAllPlayers() {
+	drawPlayer(player1);
+	drawPlayer(player2);
 }
 
-// Function to draw bombs
-function drawBombs() {
-    bombs.forEach(bomb => {
-        const { x, y } = tileToPixel(bomb.row, bomb.col);
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, TILE_SIZE / 2, 0, Math.PI * 2);
-        ctx.fill();
-    });
-}
+// function drawPlayer2(player) {
+//     ctx.fillStyle = player.color;
+//     console.log("Drawing player:", player);
+//     console.log(player.position.x-player.width/2, player.position.y-player.height, player.width, player.height)
+//     ctx.fillRect(player.position.x-player.width/2, player.position.y-player.height, player.width, player.height);
+// }
 
-// Function to update bombs from server data
-function updateBombs(serverBombs) {
-    bombs.length = 0;
-    bombs.push(...serverBombs);
-}
+function gameLoop() {
+    // console.log("Game loop running...");
+	ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-// Updated game loop to integrate bomb logic and synchronize with the server
-gameLoop = function() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (player1.keys) {
+        player1.keys.forEach(key => {
+            if (["w", "a", "s", "d"].includes(key.toLowerCase())) {
+                console.log(`Player ${player1.username} pressed ${key}`);
+                movePlayer(player1, key.toLowerCase());
+            }
+        });
+    }
+
+    if (player2.keys) {
+        player2.keys.forEach(key => {
+            if (["w", "a", "s", "d"].includes(key.toLowerCase())) {
+                console.log(`Player ${player2.username} pressed ${key}`);
+                movePlayer(player2, key.toLowerCase());
+            }
+        });
+    }
+
+	checkItemCollection(player1);
+    checkItemCollection(player2);
 
     drawBounds();
-    drawFloor();
-    drawGrid();
-    drawTilemap();
-    drawItems();
-    updatePlayerPosition();
-    drawPlayers();
-    drawBombs();
+	drawFloor();
+	drawGrid();
+
+	drawTilemap();
+	drawItems();
+	drawAllPlayers();
+	drawBombs();
     drawExplosions();
 
-    // Update bombs and explosions
-    updateBombs();
-
-    // Check if players are hit by explosions
-    checkPlayerHit(player1);
-    checkPlayerHit(player2);
-
-    requestAnimationFrame(gameLoop);
-};
-
-// Add logic to handle exiting the room
-function exitRoom() {
-    const redirectUrl = `/home.html?username=${username}`;
-    window.location.href = redirectUrl;
-}
-
-// Function to remove the earliest placed bomb (notify the server)
-function popBomb() {
-    ws.send(JSON.stringify({
-        type: 'popBomb'
-    }));
-
-    console.log("Requested to remove the earliest placed bomb.");
-}
-
-// Function to render both players
-function drawPlayers() {
-    if (username === player1.username) {
-        drawPlayerWithAnimation(player1, keyState);
-        drawPlayerWithAnimation(player2);
-    } else {
-        drawPlayerWithAnimation(player2, keyState);
-        drawPlayerWithAnimation(player1);
-    }
+	requestAnimationFrame(gameLoop);
 }

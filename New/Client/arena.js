@@ -29,7 +29,7 @@ function drawFloor() {
     ctx.fillRect(arenaX, arenaY, arenaWidth, arenaHeight);
 }
 
-const blocks = [];
+var blocks = [];
 
 function drawGrid() {
     ctx.fillStyle = gray;

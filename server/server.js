@@ -47,7 +47,7 @@ io.use((socket, next) => {
 });
 
 const { setupRoomWebSocket } = require('./room');
-const { setupGameWebSocket } = require('./game/gameServer');
+const { setupGameWebSocket } = require('./game/gameSocket');
 
 // Pass WebSocket namespaces explicitly
 const roomNamespace = io.of("/room");
