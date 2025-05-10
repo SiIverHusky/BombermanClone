@@ -185,6 +185,7 @@ function inputHandler(event) {
                 currentPlayer.bombCount += 10; // Example: give 1 bomb
                 currentPlayer.bombRange += 10; // Example: increase bomb range
                 currentPlayer.color = "black";
+                sendPlayerUpdate(currentPlayer);
             }
 			sendPlayerUpdate(currentPlayer);
         } else if (event.type === 'keyup') {

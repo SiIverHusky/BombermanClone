@@ -6,7 +6,7 @@ const { signUp, signIn, signOut, getSession, playerStats } = require('./auth');
 const { createRoom, joinRoom } = require('./room');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

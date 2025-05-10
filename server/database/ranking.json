@@ -1,15 +1,15 @@
 [
   {
     "username": "a",
-    "wins": 4,
-    "losses": 10,
-    "draws": 30
+    "wins": 16,
+    "losses": 16,
+    "draws": 31
   },
   {
     "username": "s",
-    "wins": 1,
-    "losses": 14,
-    "draws": 29
+    "wins": 34,
+    "losses": 15,
+    "draws": 30
   },
   {
     "username": "Won",
@@ -22,5 +22,29 @@
     "wins": 0,
     "losses": 1,
     "draws": 1
+  },
+  {
+    "username": "harisnew",
+    "wins": 0,
+    "losses": 1,
+    "draws": 0
+  },
+  {
+    "username": "harisnewsss",
+    "wins": 0,
+    "losses": 4,
+    "draws": 0
+  },
+  {
+    "username": "newPlayer",
+    "wins": 1,
+    "losses": 5,
+    "draws": 0
+  },
+  {
+    "username": "newnew",
+    "wins": 0,
+    "losses": 3,
+    "draws": 0
   }
 ]
