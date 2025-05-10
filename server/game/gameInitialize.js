@@ -89,7 +89,7 @@ function addPlayer(playerStates, username) {
 		latestKey: null,
 		alive: true,
 		coins: 0,
-        maxRange: 1,
+        bombRange: 1,
         bombCount: 1,
         width: 16 * 4,
         height: 24 * 4

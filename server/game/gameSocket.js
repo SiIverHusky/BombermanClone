@@ -95,7 +95,9 @@ function setupGameWebSocket(io, authSession) {
 					keys: data.keys,
 					latestKey: data.latestKey,
 					alive: data.alive,
-					coins: data.coins
+					coins: data.coins,
+					bombCount: data.bombCount,
+					bombRange: data.bombRange
 				});
 
 				socket.to(roomCode).emit("updatePlayer", {
@@ -105,7 +107,9 @@ function setupGameWebSocket(io, authSession) {
 					color: player.color,
 					keys: player.keys,
 					alive: player.alive,
-					coins: player.coins
+					coins: player.coins,
+					bombCount: player.bombCount,
+					bombRange: player.bombRange
 				});
 
 				if (callback) {
@@ -120,7 +124,7 @@ function setupGameWebSocket(io, authSession) {
 
 		socket.on("updateTilemap", (data, callback) => {
             try {
-                activeGame.get(roomCode).tilemap = data.tilemap;
+                activeGames.get(roomCode).tilemap = data.tilemap;
                 socket.to(roomCode).emit("updateTilemap", { tilemap: data.tilemap });
                 if (callback) callback({ success: true, message: "Tilemap updated successfully." });
             } catch (error) {

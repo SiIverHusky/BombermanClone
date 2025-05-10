@@ -13,7 +13,7 @@ let player1 = {
 	keys: [],
 	alive: false,
 	coins: 0,
-	maxRange: 1,
+	bombRange: 1,
 	bombCount: 10,
 	width: 16 * scale,
 	height: 24 * scale
@@ -27,7 +27,7 @@ let player2 = {
 	keys: [],
 	alive: false,
 	coins: 0,
-	maxRange: 1,
+	bombRange: 1,
 	bombCount: 10,
     width: 16 * scale,
 	height: 24 * scale
@@ -67,6 +67,8 @@ ws.on("updatePlayer", (data) => {
     player.latestKey = data.latestKey;
     player.alive = data.alive;
     player.coins = data.coins;
+    player.bombCount = data.bombCount;
+    player.bombRange = data.bombRange;
 });
 
 function sendPlayerUpdate(player) {
@@ -104,7 +106,7 @@ ws.on("updateBombs", (data) => {
 function sendBombsUpdate(bombs) {
     ws.emit("updateBombs", { bombs }, (response) => {
         if (response.success) {
-            // console.log("Bombs update processed successfully:", response.message);
+            console.log("Bombs update processed successfully:", response.message);
         } else {
             console.error("Bombs update failed:", response.message);
         }
@@ -236,7 +238,7 @@ function gameLoop() {
 	if (player1.keys) {
         player1.keys.forEach(key => {
             if (["w", "a", "s", "d"].includes(key.toLowerCase())) {
-                console.log(`Player ${player1.username} pressed ${key}`);
+                // console.log(`Player ${player1.username} pressed ${key}`);
                 movePlayer(player1, key.toLowerCase());
             }
         });
@@ -245,7 +247,7 @@ function gameLoop() {
     if (player2.keys) {
         player2.keys.forEach(key => {
             if (["w", "a", "s", "d"].includes(key.toLowerCase())) {
-                console.log(`Player ${player2.username} pressed ${key}`);
+                // console.log(`Player ${player2.username} pressed ${key}`);
                 movePlayer(player2, key.toLowerCase());
             }
         });
@@ -253,6 +255,9 @@ function gameLoop() {
 
 	checkItemCollection(player1);
     checkItemCollection(player2);
+
+    updateBombs();
+    // hitPlayersDetection()
 
     drawBounds();
 	drawFloor();
