@@ -25,10 +25,10 @@ let items = [];
 function collectItem(player, item) {
 	switch (item.type) {
 		case ITEM_TYPES.INCREASE_BOMB_RANGE:
-			player.bombRange++;
+			player.bombRange += 1;
 			break;
 		case ITEM_TYPES.INCREASE_BOMB_COUNT:
-			player.bombCount++;
+			player.bombCount += 1;
 			break;
 		case ITEM_TYPES.SMALL_COIN:
 			player.coins += 1;
@@ -41,9 +41,19 @@ function collectItem(player, item) {
 }
 
 function checkItemCollection(player) {
+	debugItem = {
+		0: "INCREASE_BOMB_RANGE",
+		1: "INCREASE_BOMB_COUNT",
+		2: "SMALL_COIN",
+		3: "BIG_COIN"
+	}
+
 	items.forEach(item => {
-		if (player.row === item.row && player.col === item.col) {
+		if (player.tilePos.row === item.row && player.tilePos.col === item.col) {
+			console.log("Item collected:", debugItem[item.type], "by player:", player.username);
 			collectItem(player, item);
+			sendPlayerUpdate(player); // Send the updated player state to the server
+			sendItemsUpdate(items); // Send the updated items to the server
 		}
 	});
 }

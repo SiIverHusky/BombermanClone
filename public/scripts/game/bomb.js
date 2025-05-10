@@ -7,8 +7,10 @@ function placeBomb(player, tilemap) {
 		tilemap[row][col] = TILE_BOMB; // Place a bomb on the tile
 		pushPlayerOffBomb(player, tilemap); // Push player off the bomb
 		player.bombCount--;
-		bombs.push({ row, col, timeToExplode: Date.now() + 3000, username: player.username, range: player.maxRange});
+		bombs.push({ row: row, col: col, timeToExplode: Date.now() + 3000, username: player.username, range: player.bombRange});
+		console.log("Bombs: ", bombs)
 		sendBombsUpdate(bombs);
+		sendTilemapUpdate(tilemap);
 		return true; // Bomb placed successfully
 	}
 	return false; // Bomb placement failed
@@ -48,22 +50,31 @@ function pushPlayerOffBomb(player, tilemap) {
 		}
 	}
 	if (closestTile) {
-		player.position.x += closestDirection.col*TILE_SIZE/2
-		player.position.y += closestDirection.row*TILE_SIZE/2
+		player.position.x += closestDirection.col*(TILE_SIZE);
+		player.position.y += closestDirection.row*(TILE_SIZE)
 	}
 }
 
 function updateBombs() {
 	const currentTime = Date.now();
+
 	bombs.forEach((bomb, index) => {
 		if (currentTime >= bomb.timeToExplode) {
+			// console.log("Bomb exploded: ", bomb);
 			explodeBomb(bomb);
 			bombs.splice(index, 1); // Remove the bomb after explosion
+			sendBombsUpdate(bombs);
 			if (bomb.username === player1.username) {
 				player1.bombCount++;
 			} else {
 				player2.bombCount++;
 			}
+		}
+	});
+
+	explosions.forEach((explosion, index) => {
+		if (currentTime >= explosion.expiresAt) {
+			explosions.splice(index, 1); // Remove the explosion after its duration
 		}
 	});
 }
@@ -82,10 +93,13 @@ function createExplosion(bomb) {
 		expiresAt: Date.now() + 500
 	});
 
-	for (const { dRow, dCol } of directions) {
+	for (const { row: dRow, col: dCol } of directions) {
+		// console.log("dRow: ", dRow, "dCol: ", dCol)
+		// console.log("Bomb range: ", bomb.range)
 		for (let i = 1; i <= bomb.range; i++) {
 			const newRow = bomb.row + dRow * i;
 			const newCol = bomb.col + dCol * i;
+			// console.log("newRow: ", newRow, "newCol: ", newCol)
 
 			if (newRow < 0 || newRow >= TILE_ROWS || newCol < 0 || newCol >= TILE_COLS) break;
 
@@ -93,6 +107,7 @@ function createExplosion(bomb) {
 
 			if (tilemap[newRow][newCol] === TILE_BRICK) {
 				tilemap[newRow][newCol] = TILE_EMPTY;
+				sendTilemapUpdate(tilemap); // Send the updated tilemap to the server
 				
 				explosions.push({
 					row: newRow,
@@ -111,13 +126,15 @@ function createExplosion(bomb) {
 	}
 }
 
-function hitPlayers() {
+
+function hitPlayersDetection() {
 	for (const explosion of explosions) {
 		if (Date.now() < explosion.expiresAt) {
 			const { row, col } = explosion;
 			for (const player of [player1, player2]) {
 				if (player.tilePos.row === row && player.tilePos.col === col) {
 					player.alive = false; // Mark the player as dead
+					sendPlayerUpdate(player); // Send the updated player state to the server
 				}
 			}
 		}
@@ -127,6 +144,7 @@ function hitPlayers() {
 function explodeBomb(bomb) {
 	const { row, col } = bomb;
 	tilemap[row][col] = TILE_EMPTY; // Remove the bomb from the tile
+	sendTilemapUpdate(tilemap); // Send the updated tilemap to the server
 	createExplosion(bomb);
 }
 
@@ -143,10 +161,8 @@ function drawBombs() {
 
 function drawExplosions() {
 	for (const explosion of explosions) {
-		if (Date.now() < explosion.expiresAt) {
-			const { x, y } = tileToPixel(explosion.row, explosion.col);
-			ctx.fillStyle = "orange";
-			ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-		}
+		const { x, y } = tileToPixel(explosion.row, explosion.col);
+		ctx.fillStyle = "orange";
+		ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);		
 	}
 }
