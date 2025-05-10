@@ -119,7 +119,7 @@ function setupGameWebSocket(io, authSession) {
 
 		socket.on("updateTilemap", (data, callback) => {
             try {
-                activeGames[roomCode].tilemap = data.tilemap;
+                activeGame.get(roomCode).tilemap = data.tilemap;
                 socket.to(roomCode).emit("updateTilemap", { tilemap: data.tilemap });
                 if (callback) callback({ success: true, message: "Tilemap updated successfully." });
             } catch (error) {
@@ -130,11 +130,10 @@ function setupGameWebSocket(io, authSession) {
 
         socket.on("updateBombs", (data, callback) => {
             try {
-				console.log(data);
-                activeGames[roomCode].bombs = data.bombs;
-				console.log("Bombs updated:", data.bombs);
+                activeGames.get(roomCode).bombs = data.bombs;
+				console.log("gameSocket.js line 134 - Bombs updated:", data.bombs);
                 //socket.to(roomCode).emit("updateBombs", { bombs: data.bombs });
-                broadcastBombUpdate(roomCode, activeGames[roomCode], io);
+                broadcastBombUpdate(roomCode, activeGames.get(roomCode), io);
 				if (callback) callback({ success: true, message: "Bombs updated successfully." });
             } catch (error) {
                 console.error("Error updating bombs:", error);
@@ -144,7 +143,7 @@ function setupGameWebSocket(io, authSession) {
 
         socket.on("updateItems", (data, callback) => {
             try {
-                activeGames[roomCode].items = data.items;
+                activeGames.get(roomCode).items = data.items;
                 socket.to(roomCode).emit("updateItems", { items: data.items });
                 if (callback) callback({ success: true, message: "Items updated successfully." });
             } catch (error) {
@@ -170,7 +169,7 @@ function startGameForRoom(roomCode, players, io) {
 
 	const gameState = initializeGameState(roomCode, players);
 
-	activeGames.set(roomCode, gameState);
+	activeGames.set(roomCode, gameState); 
 
 	io.to(roomCode).emit("initialize", {
 		tilemap: gameState.tilemap,
