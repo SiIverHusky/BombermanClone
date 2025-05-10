@@ -2,7 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 
-const { signUp, signIn, signOut, getSession } = require('./auth');
+const { signUp, signIn, signOut, getSession, playerStats } = require('./auth');
 const { createRoom, joinRoom } = require('./room');
 
 const app = express();
@@ -35,6 +35,8 @@ app.get('/session', getSession);
 
 app.post('/create-room', createRoom);
 app.post('/join-room', joinRoom);
+
+app.get('/player-stats', playerStats);
 
 /* Set up WebSocket server for room and game management */
 const http = require('http');

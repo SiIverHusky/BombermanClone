@@ -92,4 +92,31 @@ async function getSession(req, res) {
 	}
 }
 
-module.exports = { signUp, signIn, signOut, getSession };
+async function playerStats(req, res){
+	//console.log(req.body);
+	const username = req.query.username;
+	
+	
+	try {
+		const users = require("./database/ranking.json");
+		console.log(username)
+		const user = users.find(user => user.username === username);
+
+		if (!user) {
+			return res.status(200).json( { message: 'success', user: {
+				"username": username,
+				"wins": 0,
+				"losses": 0,
+				"draws": 0
+			} });
+		}
+		
+
+		res.status(200).json({ message: 'success', user: user });
+	} catch (err) {
+		console.error('Error fetching player statistics', err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+}
+
+module.exports = { signUp, signIn, signOut, getSession, playerStats };

@@ -46,6 +46,23 @@ $(document).ready(function () {
 				InvalidCredentialsError(err);
 			}
 		})
+
+        $.ajax({
+        url: `/player-stats?username=${encodeURIComponent(username)}`, 
+        method: "GET",
+        data: JSON.stringify({ username }),
+        success: function (res) {
+            const user = res.user;
+            console.log(user)
+            $("#stat-win").text((user.wins).toString());
+            $("#stat-loss").text((user.losses).toString());
+            $("#stat-draw").text((user.draws).toString());
+
+        },
+        error: function (err) {
+            console.error("Error fetching player stats:", err);
+        }
+    });
 	})
 
 	// Sign-up
