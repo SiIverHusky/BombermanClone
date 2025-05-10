@@ -109,7 +109,7 @@ function spritePlayer(player, animationState = "stillDown", frameIndex = 0) {
         spritesheet,
         frameX, frameY, // Source X, Y
         player.width, player.height, // Source width, height
-        player.position.x - player.width/2, player.position.y - player.height, // Destination X, Y
+        player.position.x - player.width/2, player.position.y - player.height+4, // Destination X, Y
         player.width, player.height // Destination width, height
     );
 }
