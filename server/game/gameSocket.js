@@ -119,7 +119,7 @@ function setupGameWebSocket(io, authSession) {
 
 		socket.on("updateTilemap", (data, callback) => {
             try {
-                activeGame.get(roomCode).tilemap = data.tilemap;
+                activeGames.get(roomCode).tilemap = data.tilemap;
                 socket.to(roomCode).emit("updateTilemap", { tilemap: data.tilemap });
                 if (callback) callback({ success: true, message: "Tilemap updated successfully." });
             } catch (error) {
