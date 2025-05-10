@@ -84,7 +84,29 @@ function setupRoomWebSocket(io, authSession) {
             room.status = "started";
             io.to(roomCode).emit("gameStarted");
         });
+        socket.on("ranking", () => {
 
+            const ranking = require("./database/ranking.json");
+            socket.emit("ranking", { data: ranking });
+
+        });
+
+        socket.on("lastGame", () => {
+            console.log("Last game data requested by", socket.request.session.user.username);
+            // get last game data from /database/gameLog.json
+            const gameLog = require("./database/gameLog.json");
+
+            const matchingGames = gameLog.filter(game => game.roomCode === roomCode);
+            const lastGame = matchingGames.length > 0 ? matchingGames[matchingGames.length - 1] : null;
+
+            if (lastGame) {
+                socket.emit("lastGame", { data: lastGame });
+            } 
+            else {
+                socket.emit("lastGame", { data: [] });
+            }
+
+        });
 
         socket.on("disconnect", () => {
 

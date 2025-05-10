@@ -48,11 +48,68 @@ $(document).ready(function () {
         if (data.status === "gameover") {
             $("#gameover-info").show();
             $("#start-game-button").text("Rematch");
+            console.log("Required Lastgame data");
+            socket.emit("lastGame");
+            socket.emit("ranking");
         } else {
             $("#start-game-button").text("Start Game");
             $("#gameover-info").hide();
         }
     });
+
+socket.on("lastGame", (data) => {
+    const $gameResult = $("#game-result");
+    const $coins = $("#coins");
+
+    if (data.data) {
+        // 게임 결과 표시
+        if (data.data.winner !== null) {
+            $gameResult.text(`${data.data.winner} Win!`);
+        } else {
+            $gameResult.text("It's a draw!");
+        }
+
+        // 코인 정보 표시
+        const coinsText = data.data.players
+            .map(player => `${player.username}: ${player.coins}`)
+            .join(" | ");
+        $coins.text(`Collected coins: ${coinsText}`);
+    } else {
+        $gameResult.text("No last game data available.");
+        $coins.text("");
+    }
+});
+
+// ranking 이벤트 처리
+socket.on("ranking", (data) => {
+    console.log(data.data[0])
+    const $rankingList = $("#ranking-list");
+    $rankingList.empty();
+    //const players = Array.isArray(data.data.players) ? data.data.players : [];
+    // 승률 계산 및 정렬
+    const rankedPlayers = data.data
+        .map(player => {
+            const wins = player.wins || 0;
+            const losses = player.losses || 0;
+            const draws = player.draws || 0;
+            // 승률: 무승부 제외, 승/패 모두 0이면 0
+            const winRate = wins + losses === 0 ? 0 : wins / (wins + losses);
+            return { ...player, winRate };
+        })
+        .sort((a, b) => {
+            // 승률 내림차순, 동일 승률 시 승수 내림차순
+            if (b.winRate !== a.winRate) return b.winRate - a.winRate;
+            return b.wins - a.wins;
+        })
+        .slice(0, 5); // 최대 5명
+
+    // 랭킹 표시
+    rankedPlayers.forEach(player => {
+        $rankingList.append(
+            `<li>${player.username}: ${player.wins}/${player.losses}/${player.draws}</li>`
+        );
+    });
+});
 
     // Handle game start event
     socket.on("gameStarted", () => {

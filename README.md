@@ -1,5 +1,35 @@
 # I'ma Bomb U!
+
 COMP4021 Project - A Bomberman Clone for the browser
+
+## Getting Started
+
+Follow these steps to set up and run the server for the project.
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd <project-directory>
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the Server
+1. Start the server:
+   ```bash
+   node server/server.js
+   ```
+2. Open your browser and visit:
+   ```
+   http://localhost:3000
+   ```
+
+## Tasks
 
 Home task:
 1. Joining and Creating a game (Client -> Server)
@@ -23,42 +53,6 @@ Game Over:
 1. Show Game Stats (Server -> Client)
 2. Update and show Player Statistics (Server -> Client)
 3. Restart or Exit (Client -> Server)
-
-
-
-## Websocket APIs (Server -> Client)
-
-"error", { message }
-
-~~"timerUpdate", { seconds }~~
-
-"gameOver", { message }
-
-"updateGameState" { state }
-
-"explodeBomb" { id }
-
-~~"updatePos", { players: [ [ username1: { x:0 , y:0 } , username1: { x:20 , y:20 } ] }
-client must update players' position (every 16ms)~~
-~~"placeObject" { id: x8UevHc, type: "coin", x:30, y:35 }
-type : "coin" or "item"~~
-~~"removeObject" { id }~~
-~~"placeBomb" { id: e7CvkuQ, x:30, y:35 }~~
-
-
-## Websocket APIs (Client -> Server)
-
-"updatePos", { x:30, y:20 }
-send my position to server (every 16ms)
-
-"placeBomb" { x:30, y:20 }
-
-"useItem" { id: x8UevHc }
-
-"collectItem" { id: x8UevHc }
-
-
-
 
 
 
