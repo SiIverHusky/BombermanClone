@@ -14,7 +14,7 @@ let player1 = {
 	alive: false,
 	coins: 0,
 	maxRange: 1,
-	bombCount: 1,
+	bombCount: 10,
 	width: 16 * scale,
 	height: 24 * scale
 }
@@ -28,7 +28,7 @@ let player2 = {
 	alive: false,
 	coins: 0,
 	maxRange: 1,
-	bombCount: 1,
+	bombCount: 10,
     width: 16 * scale,
 	height: 24 * scale
 }
@@ -40,6 +40,12 @@ ws.on("connect", () => {
 	console.log("Connected to the server!");
 	ws.emit("playerReady", { roomCode }); // Notify the server that the player is ready
 });
+
+ws.on("timerUpdate", (data) => {
+    updateTimerDisplay(data.seconds);
+});
+
+//io.to(roomCode).emit('timerUpdate', { seconds: Math.floor(remainingTime / 1000) });
 
 ws.on("initialize", (data) => {
     initializeGame(data);
@@ -213,6 +219,10 @@ function drawAllPlayers() {
 //     console.log(player.position.x-player.width/2, player.position.y-player.height, player.width, player.height)
 //     ctx.fillRect(player.position.x-player.width/2, player.position.y-player.height, player.width, player.height);
 // }
+
+function updateTimerDisplay(seconds) {
+    $("#timer").text(`Timer: ${Math.floor(seconds/60)}:${seconds%60}`)
+}
 
 function gameLoop() {
     // console.log("Game loop running...");

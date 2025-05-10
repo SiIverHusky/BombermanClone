@@ -163,7 +163,8 @@ function initializeGameState(roomCode, players) {
 		tilemap,
 		players: playerStates,
 		items: [],
-		bombs: []
+		bombs: [],
+        gameStartTime: Date.now()
 	};
 
 	initializeItems(gameState);

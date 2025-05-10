@@ -119,7 +119,7 @@ function setupGameWebSocket(io, authSession) {
 
 		socket.on("updateTilemap", (data, callback) => {
             try {
-                gameStates[roomCode].tilemap = data.tilemap;
+                activeGames[roomCode].tilemap = data.tilemap;
                 socket.to(roomCode).emit("updateTilemap", { tilemap: data.tilemap });
                 if (callback) callback({ success: true, message: "Tilemap updated successfully." });
             } catch (error) {
@@ -130,10 +130,12 @@ function setupGameWebSocket(io, authSession) {
 
         socket.on("updateBombs", (data, callback) => {
             try {
-                gameStates[roomCode].bombs = data.bombs;
+				console.log(data);
+                activeGames[roomCode].bombs = data.bombs;
 				console.log("Bombs updated:", data.bombs);
-                socket.to(roomCode).emit("updateBombs", { bombs: data.bombs });
-                if (callback) callback({ success: true, message: "Bombs updated successfully." });
+                //socket.to(roomCode).emit("updateBombs", { bombs: data.bombs });
+                broadcastBombUpdate(roomCode, activeGames[roomCode], io);
+				if (callback) callback({ success: true, message: "Bombs updated successfully." });
             } catch (error) {
                 console.error("Error updating bombs:", error);
                 if (callback) callback({ success: false, message: "Failed to update bombs." });
@@ -142,7 +144,7 @@ function setupGameWebSocket(io, authSession) {
 
         socket.on("updateItems", (data, callback) => {
             try {
-                gameStates[roomCode].items = data.items;
+                activeGames[roomCode].items = data.items;
                 socket.to(roomCode).emit("updateItems", { items: data.items });
                 if (callback) callback({ success: true, message: "Items updated successfully." });
             } catch (error) {
@@ -167,6 +169,7 @@ function startGameForRoom(roomCode, players, io) {
 	}
 
 	const gameState = initializeGameState(roomCode, players);
+
 	activeGames.set(roomCode, gameState);
 
 	io.to(roomCode).emit("initialize", {
@@ -189,7 +192,7 @@ function startGameForRoom(roomCode, players, io) {
 		broadcastTilemapUpdate(roomCode, gameState, io);
 		broadcastItemUpdate(roomCode, gameState, io);
 		broadcastPlayerUpdate(roomCode, gameState, io);
-		broadcastBombUpdate(roomCode, gameState, io);
+		broadcastBombUpdate(roomCode, gameState, io); // Won: Don't need this function here
 		broadcastTimerUpdate(roomCode, GAME_DURATION - (Date.now() - gameState.gameStartTime), io);
 		checkEndGame(roomCode, gameState, io);
 	}, 100);
