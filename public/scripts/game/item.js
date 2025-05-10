@@ -61,14 +61,32 @@ function checkItemCollection(player) {
 
 function drawItems() {
 	items.forEach(item => {
-		const { x, y } = tileToPixel(item.row, item.col);
-		const size = ITEM_SIZES[item.type];
-		ctx.fillStyle = ITEM_COLORS[item.type];
-		ctx.fillRect(
-			x + TILE_SIZE / 2 - size / 2,
-			y + TILE_SIZE / 2 - size / 2,
-			size,
-			size
-		);
+		if (item.type == 0) {
+			ctx.fillStyle = ITEM_COLORS[item.type];
+			const { x, y } = tileToPixel(item.row, item.col, true);
+			ctx.beginPath();
+			ctx.moveTo(x, y-TILE_SIZE/4-10);
+			ctx.lineTo(x+TILE_SIZE/4, y+TILE_SIZE/3);
+			ctx.lineTo(x, y+4);
+			ctx.lineTo(x-TILE_SIZE/4, y+TILE_SIZE/3);
+			ctx.closePath();
+			ctx.fill();
+		} else if (item.type == 1) {
+			ctx.fillStyle = ITEM_COLORS[item.type];
+			const { x, y } = tileToPixel(item.row, item.col, true);
+			ctx.beginPath();
+			ctx.arc(x, y, TILE_SIZE/3, 0, Math.PI * 2);
+			ctx.fill();
+		} else {
+			const { x, y } = tileToPixel(item.row, item.col);
+			const size = ITEM_SIZES[item.type];
+			ctx.fillStyle = ITEM_COLORS[item.type];
+			ctx.fillRect(
+				x + TILE_SIZE / 2 - size / 2,
+				y + TILE_SIZE / 2 - size / 2,
+				size,
+				size
+			);
+		}
 	});
 }

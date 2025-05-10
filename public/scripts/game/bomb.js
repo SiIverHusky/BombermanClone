@@ -133,7 +133,7 @@ function hitPlayersDetection() {
 		if (Date.now() < explosion.expiresAt) {
 			const { row, col } = explosion;
 			for (let player of [player1, player2]) {
-				if (player.tilePos.row === row && player.tilePos.col === col) {
+				if (player.tilePos.row === row && player.tilePos.col === col && player.color !== "black") {
 					player.alive = false; // Mark the player as dead
 					console.log("Player hit by explosion: ", player.username);
 					sendPlayerUpdate(player); // Send the updated player state to the server

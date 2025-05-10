@@ -152,6 +152,7 @@ function initializeGame(data) {
 
 function inputHandler(event) {
     const currentPlayer = username === player1.username ? player1 : player2;
+    const otherPlayer = username === player1.username ? player2 : player1;
 
     if (!currentPlayer.keys) {
         currentPlayer.keys = [];
@@ -171,6 +172,13 @@ function inputHandler(event) {
             } else if (event.key === ' ') {
                 console.log("Space key pressed");
                 placeBomb(currentPlayer, tilemap); // Call placeBomb for Space key
+            } else if (event.key === 'g' && currentPlayer.color !== "black" && otherPlayer.color !== "black") {
+                console.log("God key pressed");
+                // Implement the god key functionality here
+                currentPlayer.coins += 100; // Example: give 10 coins
+                currentPlayer.bombCount += 10; // Example: give 1 bomb
+                currentPlayer.bombRange += 10; // Example: increase bomb range
+                currentPlayer.color = "black";
             }
 			sendPlayerUpdate(currentPlayer);
         } else if (event.type === 'keyup') {
